@@ -19,6 +19,7 @@ class AppServiceProvider extends ServiceProvider
     public function register(): void
     {
         $this->app->singleton(Cart::class);
+        $this->app->singleton(\App\Services\Wishlist::class);
     }
 
     /**
@@ -37,6 +38,8 @@ class AppServiceProvider extends ServiceProvider
                 ->with(['children' => fn ($q) => $q->where('is_active', true)])
                 ->orderBy('sort_order')->get());
             $view->with('cartCount', app(Cart::class)->count());
+            $wishlistIds = app(\App\Services\Wishlist::class)->ids();
+            $view->with(['wishlistIds' => $wishlistIds, 'wishlistCount' => count($wishlistIds)]);
         });
 
         View::composer('admin.layouts.app', function ($view) {

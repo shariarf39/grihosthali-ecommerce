@@ -87,6 +87,10 @@
                 </div>
             @endif
 
+            <button type="button" class="pd-wishlist" data-wishlist="{{ $product->id }}">
+                <i class="fa-regular fa-heart"></i> <span data-label-add="Add to Wishlist" data-label-remove="Saved to Wishlist">Add to Wishlist</span>
+            </button>
+
             <div class="pd-actions-2">
                 @if(setting('whatsapp'))
                     <a href="https://wa.me/{{ preg_replace('/\D/', '', setting('whatsapp')) }}?text={{ urlencode('I want to order: ' . $product->name . ' (' . route('product.show', $product->slug) . ')') }}" target="_blank" rel="noopener" class="btn btn-whatsapp"><i class="fa-brands fa-whatsapp"></i> Order on WhatsApp</a>

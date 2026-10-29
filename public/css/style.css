@@ -801,3 +801,77 @@ textarea.form-control { height: auto; padding: 12px 14px; resize: vertical; }
 .courier-track div { flex: 1; min-width: 180px; }
 .courier-track strong { display: block; color: var(--title); }
 .courier-track small { color: var(--muted); }
+
+/* ---------- Header: wishlist badge + "More" dropdown ---------- */
+.count-badge {
+    position: absolute; top: -8px; right: -10px; min-width: 18px; height: 18px; padding: 0 4px; border-radius: 9px;
+    background: var(--danger); color: #fff; font-size: 11px; font-weight: 600; line-height: 18px; text-align: center;
+}
+.count-badge.is-empty { display: none; }
+.header-right { gap: 24px; }
+.header-action i { font-size: 22px; }
+.header-more { position: relative; }
+.header-more > .header-action[aria-expanded="true"], .header-more:hover > .header-action { color: var(--secondary); }
+.more-menu {
+    position: absolute; top: calc(100% + 14px); right: -8px; z-index: 1000; min-width: 230px; list-style: none; margin: 0; padding: 6px 0;
+    background: #fff; border: 1px solid var(--border); border-radius: 10px; box-shadow: 0 16px 40px rgba(20, 40, 30, .14);
+    opacity: 0; visibility: hidden; transform: translateY(8px); transition: all .22s ease;
+}
+.more-menu::before { content: ""; position: absolute; top: -14px; left: 0; right: 0; height: 14px; }
+.header-more.open .more-menu { opacity: 1; visibility: visible; transform: none; }
+@media (hover: hover) { .header-more:hover .more-menu { opacity: 1; visibility: visible; transform: none; } }
+.more-menu li + li { border-top: 1px solid #f0f0f0; }
+.more-menu a { display: flex; align-items: center; gap: 14px; padding: 12px 18px; color: var(--title); font-size: 15px; }
+.more-menu a i { width: 22px; font-size: 19px; color: var(--primary); text-align: center; }
+.more-menu a:hover { background: var(--bg-soft); color: var(--primary); padding-left: 22px; }
+
+/* ---------- Pinned category bar ---------- */
+.header-bottom { position: sticky; top: 0; z-index: 900; transition: box-shadow .25s; }
+.header-bottom .container { display: flex; align-items: center; }
+.header-bottom .main-menu { flex: 1; min-width: 0; }
+.sticky-actions { display: none; align-items: center; gap: 4px; margin-left: 12px; }
+.header-bottom.scrolled .sticky-actions { display: flex; animation: fadeIn .25s ease; }
+.sticky-actions a, .sticky-actions button {
+    position: relative; width: 40px; height: 40px; border-radius: 8px; display: inline-flex; align-items: center; justify-content: center;
+    color: #fff; background: none; border: 0; font-size: 17px;
+}
+.sticky-actions a:hover, .sticky-actions button:hover { background: rgba(255,255,255,.12); color: #fff; }
+.sticky-actions .cart-count, .sticky-actions .count-badge { top: 0; right: -2px; }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+/* ---------- Wishlist hearts ---------- */
+.wishlist-btn {
+    position: absolute; right: 8px; bottom: 8px; z-index: 3; width: 34px; height: 34px; border-radius: 50%; border: 0;
+    background: rgba(255,255,255,.95); color: var(--title); box-shadow: 0 2px 10px rgba(0,0,0,.12);
+    display: flex; align-items: center; justify-content: center; font-size: 15px; transition: transform .2s, color .2s, opacity .2s;
+}
+.wishlist-btn:hover { transform: scale(1.1); color: var(--danger); }
+.wishlist-btn.active { color: var(--danger); }
+@media (hover: hover) {
+    .product-card .wishlist-btn:not(.active) { opacity: 0; transform: translateY(6px); }
+    .product-card:hover .wishlist-btn { opacity: 1; transform: none; }
+}
+[data-wishlist].pulse i { animation: heartPop .4s ease; }
+@keyframes heartPop { 0% { transform: scale(1); } 40% { transform: scale(1.35); } 100% { transform: scale(1); } }
+.pd-wishlist {
+    display: inline-flex; align-items: center; gap: 8px; margin: 0 0 12px; padding: 8px 0; border: 0; background: none;
+    color: var(--title); font-weight: 500; font-size: 14.5px;
+}
+.pd-wishlist i { font-size: 18px; }
+.pd-wishlist:hover, .pd-wishlist.active { color: var(--danger); }
+.sticky-footer .wishlist-count { top: -6px; right: calc(50% - 22px); }
+
+@media (max-width: 991px) {
+    .header-right { gap: 18px; }
+}
+@media (max-width: 767px) {
+    .header-right { gap: 14px; }
+    .header-action i { font-size: 20px; }
+}
+
+/* Pinned bar: drop "All Products" and keep the categories on a single line next to the icons. */
+.header-bottom.scrolled .menu-all { display: none; }
+.header-bottom.scrolled .main-menu { flex-wrap: nowrap; }
+.header-bottom.scrolled .main-menu > li > a { white-space: nowrap; }
+@media (max-width: 1279px) { .header-bottom .main-menu > li > a { padding-left: 11px; padding-right: 11px; font-size: 13.5px; } }
+@media (max-width: 1100px) { .header-bottom .main-menu > li > a { padding-left: 8px; padding-right: 8px; font-size: 13px; } .header-bottom .main-menu > li > a .fa-house { display: none; } }

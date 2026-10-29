@@ -13,6 +13,9 @@
         @unless($product->in_stock)
             <span class="stock-out-label">Out of Stock</span>
         @endunless
+        <button type="button" class="wishlist-btn" data-wishlist="{{ $product->id }}" aria-label="Add {{ $product->name }} to wishlist">
+            <i class="fa-regular fa-heart"></i>
+        </button>
     </figure>
     <div class="product-details">
         <h4 class="product-name">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\User;
+use App\Services\Wishlist;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,6 +25,7 @@ class AuthController extends Controller
 
         if (Auth::attempt([$field => $data['login'], 'password' => $data['password']], $request->boolean('remember'))) {
             $request->session()->regenerate();
+            app(Wishlist::class)->mergeGuestInto($request->user());
 
             return redirect()->intended(route('account.index'));
         }
@@ -49,6 +51,7 @@ class AuthController extends Controller
         app(\App\Services\Notifier::class)->welcome($user);
         Auth::login($user);
         $request->session()->regenerate();
+        app(Wishlist::class)->mergeGuestInto($user);
 
         return redirect()->route('account.index')->with('success', 'Welcome to ' . setting('site_name', 'Grihosthali') . '!');
     }

@@ -106,7 +106,7 @@
                         @endif
                     </li>
                 @endforeach
-                <li class="{{ request()->routeIs('shop') ? 'active' : '' }}"><a href="{{ route('shop') }}">All Products</a></li>
+                <li class="menu-all {{ request()->routeIs('shop') ? 'active' : '' }}"><a href="{{ route('shop') }}">All Products</a></li>
             </ul>
             {{-- Shown only while the bar is pinned, so search/wishlist/cart stay one tap away. --}}
             <div class="sticky-actions">
@@ -144,8 +144,12 @@
                 <li class="sub"><a href="{{ route('category.show', $child->slug) }}">{{ $child->name }}</a></li>
             @endforeach
         @endforeach
+        <li><a href="{{ route('wishlist.index') }}"><i class="fa-regular fa-heart"></i> Wishlist</a></li>
         <li><a href="{{ route('track-order') }}"><i class="fa-solid fa-truck-fast"></i> Track Order</a></li>
+        <li><a href="{{ route('page.show', 'faqs') }}"><i class="fa-regular fa-circle-question"></i> FAQs</a></li>
+        <li><a href="{{ route('page.show', 'about-us') }}"><i class="fa-regular fa-id-badge"></i> About Us</a></li>
         <li><a href="{{ route('contact') }}"><i class="fa-solid fa-headset"></i> Contact Us</a></li>
+        @if(setting('hotline', setting('phone')))<li><a href="tel:{{ setting('hotline', setting('phone')) }}"><i class="fa-solid fa-phone-volume"></i> Call Us</a></li>@endif
     </ul>
 </aside>
 
@@ -186,7 +190,7 @@
     <a href="{{ route('home') }}" class="sticky-link"><i class="fa-solid fa-house"></i><p>Home</p></a>
     <button type="button" class="sticky-link" data-open-menu><i class="fa-solid fa-table-cells-large"></i><p>Categories</p></button>
     <button type="button" class="sticky-link" data-open-cart><i class="fa-solid fa-cart-shopping"></i><span class="cart-count">{{ $cartCount }}</span><p>Cart</p></button>
-    <a href="{{ route('track-order') }}" class="sticky-link"><i class="fa-solid fa-truck-fast"></i><p>Track</p></a>
+    <a href="{{ route('wishlist.index') }}" class="sticky-link"><i class="fa-regular fa-heart"></i><span class="wishlist-count count-badge {{ $wishlistCount ? '' : 'is-empty' }}">{{ $wishlistCount }}</span><p>Wishlist</p></a>
     <a href="{{ auth()->check() ? route('account.index') : route('login') }}" class="sticky-link"><i class="fa-regular fa-user"></i><p>Account</p></a>
 </nav>
 
@@ -210,8 +214,10 @@
             cartAdd: '{{ route('cart.add') }}',
             cartUpdate: '{{ route('cart.update') }}',
             cartRemove: '{{ route('cart.remove') }}',
-            suggest: '{{ route('search.suggest') }}'
+            suggest: '{{ route('search.suggest') }}',
+            wishlistToggle: '{{ route('wishlist.toggle') }}'
         },
+        wishlist: @json($wishlistIds),
         flash: @json($flash)
     };
 </script>

@@ -196,6 +196,58 @@
         request(GH.routes.cartData).then(renderCart).catch(() => {});
     }
 
+    /* ---------------- Wishlist ---------------- */
+    let wishlist = new Set((GH.wishlist || []).map(String));
+
+    function syncWishlist() {
+        $$('[data-wishlist]').forEach((btn) => {
+            const on = wishlist.has(String(btn.dataset.wishlist));
+            btn.classList.toggle('active', on);
+            const icon = $('i', btn);
+            if (icon) icon.className = on ? 'fa-solid fa-heart' : 'fa-regular fa-heart';
+            const label = $('[data-label-add]', btn);
+            if (label) label.textContent = on ? label.dataset.labelRemove : label.dataset.labelAdd;
+        });
+        $$('.wishlist-count').forEach((el) => {
+            el.textContent = wishlist.size;
+            el.classList.toggle('is-empty', wishlist.size === 0);
+        });
+    }
+
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('[data-wishlist]');
+        if (!btn) return;
+        e.preventDefault();
+        const id = String(btn.dataset.wishlist);
+        btn.classList.add('pulse');
+        setTimeout(() => btn.classList.remove('pulse'), 400);
+        request(GH.routes.wishlistToggle, { product_id: id })
+            .then((data) => {
+                data.added ? wishlist.add(id) : wishlist.delete(id);
+                syncWishlist();
+                toast(data.message);
+                // On the wishlist page, removed items disappear.
+                const page = btn.closest('[data-wishlist-page]');
+                if (page && !data.added) {
+                    btn.closest('.product-card').remove();
+                    if (!$('.product-card', page)) location.reload();
+                }
+            })
+            .catch((err) => toast(err.message, 'error'));
+    });
+    syncWishlist();
+
+    /* ---------------- Header "More" dropdown ---------------- */
+    $$('.header-more').forEach((wrap) => {
+        const trigger = $('button', wrap);
+        trigger.addEventListener('click', (e) => {
+            e.stopPropagation();
+            const open = wrap.classList.toggle('open');
+            trigger.setAttribute('aria-expanded', open);
+        });
+        document.addEventListener('click', (e) => { if (!wrap.contains(e.target)) wrap.classList.remove('open'); });
+    });
+
     /* ---------------- Product details quantity input ---------------- */
     $$('[data-qty-step]').forEach((btn) => btn.addEventListener('click', () => {
         const input = $('#pd-qty');
@@ -249,14 +301,35 @@
             });
         }
 
-        $$('.product-rail').forEach((rail) => {
+        // Product rows glide left one card at a time (like ghorerbazar), pausing while hovered.
+        const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        $$('.product-rail').forEach((rail, index) => {
             const section = rail.closest('section');
+            const wrapper = $('.swiper-wrapper', rail);
+            const originals = $$('.swiper-slide', wrapper);
+
+            // A seamless loop needs at least two screens of cards; repeat short rows to get there.
+            if (originals.length > 1 && originals.length < 10) {
+                for (let i = 0; wrapper.children.length < 10; i++) {
+                    const clone = originals[i % originals.length].cloneNode(true);
+                    clone.setAttribute('aria-hidden', 'true');
+                    wrapper.appendChild(clone);
+                }
+            }
+            const canLoop = wrapper.children.length >= 10;
+
             new Swiper(rail, {
-                slidesPerView: 2, spaceBetween: 10,
+                slidesPerView: 2, spaceBetween: 10, speed: 650,
+                loop: canLoop,
+                autoplay: reduceMotion || originals.length < 2 ? false : {
+                    delay: 2800 + index * 350, disableOnInteraction: false, pauseOnMouseEnter: true,
+                },
                 navigation: { nextEl: $('.rail-next', section), prevEl: $('.rail-prev', section) },
                 breakpoints: { 576: { slidesPerView: 3 }, 768: { slidesPerView: 4, spaceBetween: 14 }, 1200: { slidesPerView: 5, spaceBetween: 16 } },
             });
         });
+        syncCards();
+        syncWishlist();
 
         const brands = $('.brand-slider');
         if (brands) {
@@ -339,8 +412,13 @@
         targets.forEach((el) => { el.classList.add('reveal'); io.observe(el); });
     }
 
+    // Once the category bar is pinned, reveal its compact search / wishlist / cart icons.
     const bar = $('.header-bottom');
-    bar && window.addEventListener('scroll', () => bar.classList.toggle('scrolled', window.scrollY > 140), { passive: true });
+    if (bar) {
+        const pin = () => bar.classList.toggle('scrolled', window.scrollY > 140);
+        window.addEventListener('scroll', pin, { passive: true });
+        pin(); // also correct after a reload part-way down the page
+    }
 
     // Flash messages rendered by the server
     (GH.flash || []).forEach((f) => toast(f.message, f.type));

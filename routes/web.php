@@ -10,6 +10,7 @@ use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ShopController;
+use App\Http\Controllers\WishlistController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -41,6 +42,9 @@ Route::post('/checkout/coupon/remove', [CheckoutController::class, 'removeCoupon
 Route::get('/order-success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 Route::match(['get', 'post'], '/track-order', [PageController::class, 'trackOrder'])->name('track-order');
+Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+Route::post('/wishlist/toggle', [WishlistController::class, 'toggle'])->name('wishlist.toggle');
+
 Route::get('/returns/{orderNumber}', [ReturnController::class, 'create'])->name('returns.create');
 Route::post('/returns/{orderNumber}', [ReturnController::class, 'store'])->name('returns.store');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');

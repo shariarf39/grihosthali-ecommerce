@@ -295,6 +295,13 @@ class DatabaseSeeder extends Seeder
             'Privacy Policy' => '<p>We respect your privacy. The information you provide (name, phone number, address and email) is used only to process and deliver your orders and to contact you about them.</p><p>We never sell or share your personal information with third parties except delivery partners who need it to deliver your order.</p>',
             'Terms & Conditions' => '<p>By placing an order on Grihosthali you agree to provide accurate contact and delivery information. Prices are listed in Bangladeshi Taka (BDT) and may change without notice.</p><p>Orders are confirmed by phone before dispatch. We reserve the right to cancel orders that cannot be verified.</p>',
             'Return & Refund Policy' => '<p>If you receive a damaged or incorrect product, please inform us within 24 hours of delivery with a photo of the product. We will replace the product or refund your money.</p><p>For hygiene reasons, opened food products cannot be returned unless they are defective.</p>',
+            'FAQs' => '<h3>How do I place an order?</h3><p>Add products to your cart, click <strong>Checkout</strong>, enter your name, phone and address, and confirm. No account is needed.</p>'
+                . '<h3>How much is delivery?</h3><p>Delivery charges are shown at checkout — one price inside Dhaka and one outside Dhaka. Large orders may qualify for free delivery.</p>'
+                . '<h3>How long does delivery take?</h3><p>Usually 1–2 days inside Dhaka and 2–4 days outside Dhaka.</p>'
+                . '<h3>Can I pay on delivery?</h3><p>Yes. Cash on delivery is available all over Bangladesh. Please check the product before paying.</p>'
+                . '<h3>How can I track my order?</h3><p>Use <strong>Track Order</strong> (top of the page) with your order number and phone number.</p>'
+                . '<h3>What if I receive a damaged or wrong product?</h3><p>Request a return from <em>Track Order</em> or <em>My Account</em> within the return window. We will replace it or refund you.</p>'
+                . '<h3>Is your ghee and honey really pure?</h3><p>Yes. Our ghee is made from cow milk cream the traditional way and our honey is collected from natural hives — no additives or preservatives.</p>',
             'Delivery Policy' => '<ul><li>Inside Dhaka: delivery within 1–2 working days.</li><li>Outside Dhaka: delivery within 2–4 working days.</li><li>Cash on delivery is available all over Bangladesh.</li><li>Please check the product in front of the delivery person before paying.</li></ul>',
         ];
         foreach ($pages as $title => $content) {
