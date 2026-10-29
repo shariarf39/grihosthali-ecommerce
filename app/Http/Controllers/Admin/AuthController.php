@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AdminLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -24,8 +25,10 @@ class AuthController extends Controller
             'password' => 'required',
         ]);
 
-        if (Auth::attempt($credentials + ['is_admin' => true], $request->boolean('remember'))) {
+        if (Auth::attempt($credentials + ['is_admin' => true, 'is_active' => true], $request->boolean('remember'))) {
             $request->session()->regenerate();
+            $request->user()->forceFill(['last_login_at' => now()])->save();
+            AdminLog::record('login', 'Signed in');
 
             return redirect()->intended(route('admin.dashboard'));
         }

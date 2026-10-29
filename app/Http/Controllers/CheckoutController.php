@@ -8,6 +8,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Services\Cart;
 use App\Services\Inventory;
+use App\Services\Notifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -142,6 +143,7 @@ class CheckoutController extends Controller
 
         $this->cart->clear();
         session()->push('my_orders', $order->order_number);
+        app(Notifier::class)->orderPlaced($order);
 
         return redirect()->route('checkout.success', $order->order_number);
     }

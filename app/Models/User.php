@@ -25,6 +25,9 @@ class User extends Authenticatable
         'address',
         'password',
         'is_admin',
+        'role_id',
+        'is_active',
+        'last_login_at',
     ];
 
     /**
@@ -48,11 +51,29 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'is_active' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 
     public function orders()
     {
         return $this->hasMany(Order::class);
+    }
+
+    public function role()
+    {
+        return $this->belongsTo(Role::class);
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return $this->is_admin && $this->role?->isSuperAdmin();
+    }
+
+    /** Admin permission check used by the Gate (see AppServiceProvider). */
+    public function hasPermission(string $permission): bool
+    {
+        return $this->is_admin && $this->is_active && $this->role?->allows($permission);
     }
 }

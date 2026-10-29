@@ -60,7 +60,7 @@
                 </div>
                 <div class="header-right">
                     <a href="{{ route('track-order') }}" class="header-action hide-mobile">
-                        <i class="fa-solid fa-truck-fast"></i><span class="label">Track Order</span>
+                        <i class="fa-solid fa-map-location-dot"></i><span class="label">Track Order</span>
                     </a>
                     @auth
                         <a href="{{ auth()->user()->is_admin ? route('admin.dashboard') : route('account.index') }}" class="header-action">
@@ -68,17 +68,29 @@
                         </a>
                     @else
                         <a href="{{ route('login') }}" class="header-action">
-                            <i class="fa-regular fa-user"></i><span class="label">Login</span>
+                            <i class="fa-regular fa-user"></i><span class="label">Sign In</span>
                         </a>
                     @endauth
+                    <a href="{{ route('wishlist.index') }}" class="header-action">
+                        <i class="fa-regular fa-heart"></i><span class="wishlist-count count-badge {{ $wishlistCount ? '' : 'is-empty' }}">{{ $wishlistCount }}</span><span class="label">Wishlist</span>
+                    </a>
                     <button type="button" class="header-action" data-open-cart>
                         <i class="fa-solid fa-cart-shopping"></i><span class="cart-count">{{ $cartCount }}</span><span class="label">Cart</span>
                     </button>
+                    <div class="header-more hide-mobile">
+                        <button type="button" class="header-action" aria-haspopup="true" aria-expanded="false">
+                            <i class="fa-solid fa-bars-staggered"></i><span class="label">More</span>
+                        </button>
+                        @include('partials.more-menu')
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <nav class="header-bottom">
+</header>
+
+{{-- Category bar sits outside <header> so it can stay pinned to the top while scrolling. --}}
+<nav class="header-bottom" aria-label="Categories">
         <div class="container">
             <ul class="main-menu">
                 <li class="{{ request()->routeIs('home') ? 'active' : '' }}"><a href="{{ route('home') }}"><i class="fa-solid fa-house"></i> Home</a></li>
@@ -96,9 +108,14 @@
                 @endforeach
                 <li class="{{ request()->routeIs('shop') ? 'active' : '' }}"><a href="{{ route('shop') }}">All Products</a></li>
             </ul>
+            {{-- Shown only while the bar is pinned, so search/wishlist/cart stay one tap away. --}}
+            <div class="sticky-actions">
+                <a href="{{ route('shop') }}" aria-label="Search"><i class="fa-solid fa-magnifying-glass"></i></a>
+                <a href="{{ route('wishlist.index') }}" aria-label="Wishlist"><i class="fa-regular fa-heart"></i><span class="wishlist-count count-badge {{ $wishlistCount ? '' : 'is-empty' }}">{{ $wishlistCount }}</span></a>
+                <button type="button" data-open-cart aria-label="Cart"><i class="fa-solid fa-cart-shopping"></i><span class="cart-count">{{ $cartCount }}</span></button>
+            </div>
         </div>
     </nav>
-</header>
 
 <main>
     @yield('content')

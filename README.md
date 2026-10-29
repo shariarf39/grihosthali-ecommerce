@@ -41,6 +41,23 @@ Admin features:
 - **Settings** – logo, colours, contact & social, delivery charges/times, checkout texts, return window,
   CRM thresholds, and the whole homepage: show/hide each section, feature strip, section titles, promo banner.
 
+- **Couriers** (Integrations → Couriers) – Steadfast, Pathao and CarryBee. Enter API keys (stored encrypted),
+  *Test connection*, pick the default courier. On an order: **Send to courier** (Pathao/CarryBee city/zone/area
+  dropdowns), refresh status, tracking link, cancel (CarryBee). Bulk-send from the Orders list. Webhook URLs
+  are shown per courier for automatic delivery updates; optionally auto-mark orders Delivered/Returned.
+- **Email** (Integrations → Email) – any SMTP account, e.g. Gmail (`smtp.gmail.com`, 587, TLS, Gmail
+  *App Password*). Master on/off switch, on/off per email type (order confirmation, status updates, returns,
+  welcome, admin alerts for new order / return / contact / low stock), choose which order statuses email the
+  customer, send a test email, full sent/failed log. Emails are sent after the page responds, so checkout never waits.
+- **Staff & Access** – multiple admins with roles. Built-in roles: Super Admin, Store Manager, Order Manager,
+  Inventory Manager, Customer Support, Content Editor; create custom roles with per-section permissions.
+  Deactivate an admin to block sign-in immediately. Every admin change is recorded in the Activity Log.
+- **Admin UI** – grouped collapsible sidebar (remembers state), mini sidebar mode, mobile drawer,
+  global search (`/` key) across orders, phones, customers, products and consignment IDs, notification bell.
+
+On an existing database, run `php artisan migrate` then `php artisan db:seed --class=RoleSeeder`
+(existing admins become Super Admin).
+
 `/public/...` URLs redirect permanently to the clean URL.
 
 ## Before launch

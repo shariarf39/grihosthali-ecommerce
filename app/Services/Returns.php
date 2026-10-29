@@ -76,6 +76,8 @@ class Returns
                 'message' => "Return #{$return->return_number} requested for order #{$order->order_number} ({$data['reason']})",
             ]);
 
+            app(Notifier::class)->returnRequested($return);
+
             return $return;
         });
     }

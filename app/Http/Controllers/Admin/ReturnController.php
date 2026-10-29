@@ -122,7 +122,11 @@ class ReturnController extends Controller
             }
 
             unset($data['condition']);
+            $statusChanged = $return->status !== $data['status'];
             $return->fill($data)->save();
+            if ($statusChanged) {
+                app(\App\Services\Notifier::class)->returnStatusChanged($return);
+            }
         });
 
         return back()->with('success', 'Return updated.');

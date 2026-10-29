@@ -13,3 +13,15 @@
         @endforeach
     </div>
 @endif
+@if($order->activeShipment)
+    <div class="courier-track">
+        <i class="fa-solid fa-truck-fast"></i>
+        <div>
+            <strong>Shipped with {{ $order->activeShipment->courier_label }}</strong>
+            <small>Tracking ID: {{ $order->activeShipment->tracking_code ?: $order->activeShipment->consignment_id }} · {{ $order->activeShipment->status_label }}</small>
+        </div>
+        @if($order->activeShipment->tracking_url)
+            <a href="{{ $order->activeShipment->tracking_url }}" target="_blank" rel="noopener" class="btn btn-outline">Track parcel</a>
+        @endif
+    </div>
+@endif

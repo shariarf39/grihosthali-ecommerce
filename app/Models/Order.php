@@ -45,6 +45,17 @@ class Order extends Model
         return $this->belongsTo(CrmCustomer::class, 'crm_customer_id');
     }
 
+    public function shipments()
+    {
+        return $this->hasMany(Shipment::class)->latest();
+    }
+
+    /** The current (not cancelled) courier booking, if any. */
+    public function activeShipment()
+    {
+        return $this->hasOne(Shipment::class)->where('is_active', true)->latestOfMany();
+    }
+
     public function returns()
     {
         return $this->hasMany(OrderReturn::class)->latest();

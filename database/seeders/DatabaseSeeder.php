@@ -39,6 +39,8 @@ class DatabaseSeeder extends Seeder
             'is_admin' => true,
         ]);
 
+        $this->call(RoleSeeder::class);
+
         $brands = $this->brands();
         $categories = $this->categories();
         $this->products($categories, $brands);

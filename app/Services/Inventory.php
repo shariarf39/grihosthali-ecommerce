@@ -31,6 +31,11 @@ class Inventory
             $after = max(0, $before + $quantity);
             $product->forceFill(['stock' => $after])->save();
 
+            // Alert once, at the moment stock crosses below the product's alert level.
+            if ($before > $product->low_stock_alert && $after <= $product->low_stock_alert) {
+                app(Notifier::class)->lowStock($product);
+            }
+
             return StockMovement::create([
                 'product_id' => $product->id,
                 'user_id' => auth()->id(),

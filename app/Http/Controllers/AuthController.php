@@ -46,6 +46,7 @@ class AuthController extends Controller
         ], ['phone.regex' => 'Please enter a valid Bangladeshi mobile number.']);
 
         $user = User::create($data);
+        app(\App\Services\Notifier::class)->welcome($user);
         Auth::login($user);
         $request->session()->regenerate();
 

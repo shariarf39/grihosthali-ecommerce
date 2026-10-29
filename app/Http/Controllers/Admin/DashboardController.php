@@ -15,6 +15,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Staff without dashboard access get a simple welcome page with their shortcuts.
+        if (! auth()->user()->can('dashboard.view')) {
+            return view('admin.welcome');
+        }
+
         $valid = fn () => Order::whereNotIn('status', ['cancelled', 'returned']);
 
         $stats = [

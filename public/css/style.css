@@ -795,3 +795,9 @@ textarea.form-control { height: auto; padding: 12px 14px; resize: vertical; }
     .js-reveal .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
     .js-reveal .reveal.in { opacity: 1; transform: none; }
 }
+
+.courier-track { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 16px; margin: 0 0 20px; border-radius: 10px; background: var(--primary-soft); }
+.courier-track > i { font-size: 22px; color: var(--primary); }
+.courier-track div { flex: 1; min-width: 180px; }
+.courier-track strong { display: block; color: var(--title); }
+.courier-track small { color: var(--muted); }

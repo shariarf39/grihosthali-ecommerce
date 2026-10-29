@@ -51,7 +51,8 @@ class PageController extends Controller
             'subject' => 'nullable|string|max:200',
             'message' => 'required|string|max:3000',
         ]);
-        ContactMessage::create($data);
+        $message = ContactMessage::create($data);
+        app(\App\Services\Notifier::class)->contactReceived($message);
 
         return back()->with('success', 'Thanks for reaching out! We will get back to you soon.');
     }

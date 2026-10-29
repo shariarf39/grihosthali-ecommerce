@@ -7,7 +7,7 @@
     <a href="{{ route('admin.orders.index') }}" class="btn btn-light"><i class="fa-solid fa-arrow-left"></i> Back</a>
     <a href="{{ route('admin.orders.invoice', $order) }}" target="_blank" class="btn btn-gold"><i class="fa-solid fa-print"></i> Print Invoice</a>
     <a href="tel:{{ $order->phone }}" class="btn btn-light"><i class="fa-solid fa-phone"></i> Call Customer</a>
-    @if(in_array($order->status, ['delivered', 'returned']))
+    @if(in_array($order->status, ['delivered', 'returned']) && auth()->user()->can('returns.manage'))
         <a href="{{ route('admin.returns.create', $order) }}" class="btn btn-light"><i class="fa-solid fa-rotate-left"></i> Create Return</a>
     @endif
 </div>
@@ -60,6 +60,10 @@
     </div>
 
     <div>
+        @can('courier.manage')
+            @include('admin.orders.courier-card')
+        @endcan
+        @can('orders.manage')
         <div class="card">
             <div class="card-header"><h3>Update Order</h3></div>
             <div class="card-body">
@@ -81,6 +85,7 @@
                 </form>
             </div>
         </div>
+        @endcan
         @if($customer)
             <div class="card insight-card">
                 <div class="card-header"><h3><i class="fa-solid fa-shield-halved" style="color:var(--gold)"></i> Customer Insight</h3>
@@ -116,10 +121,12 @@
                 </ul>
             </div>
         </div>
+        @can('orders.delete')
         <form method="POST" action="{{ route('admin.orders.destroy', $order) }}" data-confirm="Permanently delete this order?">
             @csrf @method('DELETE')
             <button class="btn btn-danger" style="width:100%;justify-content:center"><i class="fa-regular fa-trash-can"></i> Delete Order</button>
         </form>
+        @endcan
     </div>
 </div>
 @endsection

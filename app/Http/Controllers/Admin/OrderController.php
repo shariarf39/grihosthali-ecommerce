@@ -7,6 +7,7 @@ use App\Models\CrmActivity;
 use App\Models\Order;
 use App\Models\Product;
 use App\Services\Inventory;
+use App\Services\Notifier;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -14,7 +15,7 @@ class OrderController extends Controller
 {
     public function index(Request $request)
     {
-        $orders = Order::withCount('items')
+        $orders = Order::withCount('items')->with('activeShipment')
             ->when($request->status, fn ($q, $s) => $q->where('status', $s))
             ->when($request->q, fn ($q, $s) => $q->where(fn ($w) => $w->where('order_number', 'like', "%$s%")
                 ->orWhere('phone', 'like', "%$s%")->orWhere('name', 'like', "%$s%")))
@@ -29,7 +30,7 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('items.product', 'user', 'returns');
+        $order->load('items.product', 'user', 'returns', 'shipments.user', 'activeShipment');
         $customer = $order->crm_customer_id
             ? \App\Models\CrmCustomer::withStats()->find($order->crm_customer_id)
             : null;
@@ -78,7 +79,11 @@ class OrderController extends Controller
                     'message' => "Order #{$order->order_number} status changed: " . Order::STATUSES[$order->status] . ' → ' . Order::STATUSES[$data['status']],
                 ]);
             }
+            $statusChanged = $order->status !== $data['status'];
             $order->update($data);
+            if ($statusChanged) {
+                app(Notifier::class)->orderStatusChanged($order);
+            }
         });
 
         return back()->with('success', 'Order updated.');

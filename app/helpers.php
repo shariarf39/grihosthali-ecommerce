@@ -9,6 +9,22 @@ if (! function_exists('setting')) {
     }
 }
 
+if (! function_exists('secret_setting')) {
+    /** Read an encrypted setting (API keys, SMTP password). */
+    function secret_setting(string $key): ?string
+    {
+        $value = Setting::get($key);
+        if (! $value) {
+            return null;
+        }
+        try {
+            return \Illuminate\Support\Facades\Crypt::decryptString($value);
+        } catch (\Throwable) {
+            return null;
+        }
+    }
+}
+
 if (! function_exists('normalize_phone')) {
     /** Bangladeshi mobile numbers in one canonical form: 01XXXXXXXXX */
     function normalize_phone(?string $phone): string
