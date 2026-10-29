@@ -17,20 +17,26 @@
         ['Main', null, null],
         ['Dashboard', 'admin.dashboard', 'fa-solid fa-gauge-high'],
         ['Orders', 'admin.orders.index', 'fa-solid fa-bag-shopping', $pendingOrders],
+        ['Returns', 'admin.returns.index', 'fa-solid fa-rotate-left', $badges['returns']],
         ['Reports', 'admin.reports', 'fa-solid fa-chart-line'],
+        ['CRM', null, null],
+        ['Customers', 'admin.crm.index', 'fa-solid fa-address-book'],
+        ['Follow-ups', 'admin.crm.follow-ups', 'fa-regular fa-bell', $badges['follow_ups']],
+        ['Messages', 'admin.messages.index', 'fa-solid fa-inbox', $badges['messages']],
+        ['Registered Users', 'admin.customers.index', 'fa-solid fa-user-check'],
+        ['Inventory', null, null],
+        ['Stock', 'admin.inventory.index', 'fa-solid fa-warehouse', $badges['low_stock']],
+        ['Stock History', 'admin.inventory.movements', 'fa-solid fa-clock-rotate-left'],
         ['Catalog', null, null],
         ['Products', 'admin.products.index', 'fa-solid fa-box'],
         ['Categories', 'admin.categories.index', 'fa-solid fa-layer-group'],
         ['Brands', 'admin.brands.index', 'fa-solid fa-tags'],
-        ['Reviews', 'admin.reviews.index', 'fa-solid fa-star'],
+        ['Reviews', 'admin.reviews.index', 'fa-solid fa-star', $badges['reviews']],
         ['Marketing', null, null],
         ['Coupons', 'admin.coupons.index', 'fa-solid fa-ticket'],
         ['Sliders', 'admin.sliders.index', 'fa-solid fa-images'],
         ['Testimonials', 'admin.testimonials.index', 'fa-solid fa-quote-left'],
         ['Subscribers', 'admin.subscribers.index', 'fa-solid fa-envelope-open-text'],
-        ['People', null, null],
-        ['Customers', 'admin.customers.index', 'fa-solid fa-users'],
-        ['Messages', 'admin.messages.index', 'fa-solid fa-inbox'],
         ['Site', null, null],
         ['Pages', 'admin.pages.index', 'fa-solid fa-file-lines'],
         ['Settings', 'admin.settings', 'fa-solid fa-gear'],
@@ -48,7 +54,7 @@
             @else
                 @php $base = \Illuminate\Support\Str::beforeLast($item[1], '.'); @endphp
                 <li>
-                    <a href="{{ route($item[1]) }}" class="{{ request()->routeIs($item[1]) || (str_ends_with($item[1], '.index') && request()->routeIs($base . '.*')) ? 'active' : '' }}">
+                    <a href="{{ route($item[1]) }}" class="{{ request()->routeIs($item[1]) || (str_ends_with($item[1], '.index') && request()->routeIs($base . '.*') && ! request()->routeIs('admin.crm.follow-ups', 'admin.inventory.movements')) ? 'active' : '' }}">
                         <i class="{{ $item[2] }}"></i> {{ $item[0] }}
                         @if(! empty($item[3]))<span class="count">{{ $item[3] }}</span>@endif
                     </a>

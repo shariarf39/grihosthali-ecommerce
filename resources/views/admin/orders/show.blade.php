@@ -7,6 +7,9 @@
     <a href="{{ route('admin.orders.index') }}" class="btn btn-light"><i class="fa-solid fa-arrow-left"></i> Back</a>
     <a href="{{ route('admin.orders.invoice', $order) }}" target="_blank" class="btn btn-gold"><i class="fa-solid fa-print"></i> Print Invoice</a>
     <a href="tel:{{ $order->phone }}" class="btn btn-light"><i class="fa-solid fa-phone"></i> Call Customer</a>
+    @if(in_array($order->status, ['delivered', 'returned']))
+        <a href="{{ route('admin.returns.create', $order) }}" class="btn btn-light"><i class="fa-solid fa-rotate-left"></i> Create Return</a>
+    @endif
 </div>
 
 <div class="grid-2">
@@ -43,6 +46,17 @@
         @if($order->note)
             <div class="card"><div class="card-header"><h3>Customer Note</h3></div><div class="card-body">{{ $order->note }}</div></div>
         @endif
+        @if($order->returns->count())
+            <div class="card">
+                <div class="card-header"><h3>Returns for this order</h3></div>
+                <div class="table-wrap"><table class="table">
+                    @foreach($order->returns as $r)
+                        <tr><td><a href="{{ route('admin.returns.show', $r) }}">#{{ $r->return_number }}</a></td><td>{{ $r->reason }}</td>
+                            <td><span class="badge badge-{{ $r->status_badge }}">{{ $r->status_label }}</span></td><td>{{ taka($r->refund_amount) }}</td></tr>
+                    @endforeach
+                </table></div>
+            </div>
+        @endif
     </div>
 
     <div>
@@ -59,7 +73,7 @@
                     </div>
                     <div class="form-group"><label>Payment Status</label>
                         <select name="payment_status" class="form-control">
-                            @foreach(['unpaid' => 'Unpaid', 'paid' => 'Paid', 'refunded' => 'Refunded'] as $k => $l)<option value="{{ $k }}" @selected($order->payment_status === $k)>{{ $l }}</option>@endforeach
+                            @foreach(['unpaid' => 'Unpaid', 'paid' => 'Paid', 'partially_refunded' => 'Partially Refunded', 'refunded' => 'Refunded'] as $k => $l)<option value="{{ $k }}" @selected($order->payment_status === $k)>{{ $l }}</option>@endforeach
                         </select>
                     </div>
                     <div class="form-group"><label>Admin Note (internal)</label><textarea name="admin_note" rows="3" class="form-control">{{ $order->admin_note }}</textarea></div>
@@ -67,6 +81,27 @@
                 </form>
             </div>
         </div>
+        @if($customer)
+            <div class="card insight-card">
+                <div class="card-header"><h3><i class="fa-solid fa-shield-halved" style="color:var(--gold)"></i> Customer Insight</h3>
+                    <span class="badge badge-{{ \App\Models\CrmCustomer::segmentBadge($customer->segment) }}">{{ $customer->segment }}</span></div>
+                <div class="card-body">
+                    @if($customer->is_blocked)<div class="alert alert-danger">Blocked customer — {{ $customer->block_reason }}</div>@endif
+                    <div class="insight-grid">
+                        <div><strong>{{ $customer->orders_count }}</strong><small>Orders</small></div>
+                        <div><strong style="color:var(--success)">{{ $customer->delivered_count }}</strong><small>Delivered</small></div>
+                        <div><strong style="color:var(--danger)">{{ $customer->failed_count }}</strong><small>Cancel/Return</small></div>
+                    </div>
+                    @if($customer->success_rate !== null)
+                        <div class="meter"><span style="width:{{ $customer->success_rate }}%;background:{{ $customer->success_rate >= 80 ? 'var(--success)' : ($customer->success_rate >= 50 ? 'var(--warning)' : 'var(--danger)') }}"></span></div>
+                        <small class="muted">{{ $customer->success_rate }}% delivery success</small>
+                    @else
+                        <small class="muted">First-time customer — consider a confirmation call.</small>
+                    @endif
+                    <a href="{{ route('admin.crm.show', $customer) }}" class="btn btn-light" style="width:100%;justify-content:center;margin-top:12px"><i class="fa-regular fa-address-card"></i> Open CRM Profile</a>
+                </div>
+            </div>
+        @endif
         <div class="card">
             <div class="card-header"><h3>Customer</h3></div>
             <div class="card-body">

@@ -97,9 +97,10 @@
             </div>
 
             <div class="pd-extra">
-                <div><i class="fa-solid fa-truck-fast"></i> Inside Dhaka delivery: {{ taka(setting('shipping_inside', 70)) }} (1–2 days)</div>
-                <div><i class="fa-solid fa-truck"></i> Outside Dhaka delivery: {{ taka(setting('shipping_outside', 130)) }} (2–4 days)</div>
+                <div><i class="fa-solid fa-truck-fast"></i> Inside Dhaka delivery: {{ taka(setting('shipping_inside')) }} ({{ setting('delivery_time_inside') }})</div>
+                <div><i class="fa-solid fa-truck"></i> Outside Dhaka delivery: {{ taka(setting('shipping_outside')) }} ({{ setting('delivery_time_outside') }})</div>
                 <div><i class="fa-solid fa-hand-holding-dollar"></i> Cash on delivery available</div>
+                @if((int) setting('return_days') > 0)<div><i class="fa-solid fa-rotate-left"></i> Easy return within {{ setting('return_days') }} days of delivery</div>@endif
             </div>
 
             <div class="pd-cat-line">

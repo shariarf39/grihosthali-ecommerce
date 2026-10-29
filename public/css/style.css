@@ -759,3 +759,39 @@ textarea.form-control { height: auto; padding: 12px 14px; resize: vertical; }
     .toast-wrap { left: 12px; right: 12px; top: 12px; }
     .toast { max-width: none; }
 }
+
+/* ---------- Returns ---------- */
+.return-page { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(0, 1fr); gap: 24px; padding: 28px 0; align-items: start; }
+.mini-info { list-style: none; padding: 0; margin: 0; }
+.mini-info li { display: flex; justify-content: space-between; padding: 9px 0; border-bottom: 1px dashed var(--border); }
+.mini-info strong { color: var(--title); }
+.return-box { margin-top: 22px; padding: 16px; border: 1px solid var(--border); border-radius: 10px; }
+.return-box h4 { font-size: 15px; margin-bottom: 8px; }
+.return-status { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 10px 0; border-bottom: 1px dashed var(--border); }
+.return-status:last-child { border-bottom: 0; }
+.return-status small { display: block; color: var(--muted); font-size: 12.5px; }
+.return-status strong { color: var(--title); }
+.return-cta { margin-top: 20px; display: flex; align-items: center; justify-content: space-between; gap: 14px; flex-wrap: wrap; padding: 16px 18px; border-radius: 10px; background: var(--secondary-soft); border: 1px dashed var(--secondary); }
+.return-cta strong { display: block; color: var(--title); }
+.return-cta span { font-size: 14px; }
+@media (max-width: 991px) { .return-page { grid-template-columns: minmax(0, 1fr); } }
+
+/* ---------- Polish ---------- */
+.breadcrumb-bar {
+    background: linear-gradient(90deg, var(--cream) 0%, #fbf8f0 60%, var(--primary-soft) 100%);
+    border-bottom: 1px solid #efe7d4; padding: 16px 0;
+}
+.breadcrumb a:hover { color: var(--primary); }
+.product-card { will-change: transform; }
+.product-card:hover { transform: translateY(-3px); }
+.product-media { background: linear-gradient(110deg, #f6f2e8 8%, #fbf9f3 18%, #f6f2e8 33%); }
+.checkout-card, .account-card, .auth-box, .success-box { box-shadow: 0 4px 22px rgba(20, 40, 30, .05); }
+.section-head h3 { letter-spacing: -.2px; }
+.header-bottom.scrolled { box-shadow: 0 6px 18px rgba(0, 0, 0, .14); }
+::selection { background: var(--secondary); color: #fff; }
+
+/* Scroll reveal: only active when JS has run, and never for reduced-motion users. */
+@media (prefers-reduced-motion: no-preference) {
+    .js-reveal .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
+    .js-reveal .reveal.in { opacity: 1; transform: none; }
+}

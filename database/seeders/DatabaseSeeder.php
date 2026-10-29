@@ -9,6 +9,7 @@ use App\Models\Page;
 use App\Models\Product;
 use App\Models\Setting;
 use App\Models\Slider;
+use App\Models\StockMovement;
 use App\Models\Testimonial;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -194,7 +195,7 @@ class DatabaseSeeder extends Seeder
                 $image = "products/{$slug}.svg";
             }
 
-            Product::updateOrCreate(['slug' => $slug], [
+            $product = Product::updateOrCreate(['slug' => $slug], [
                 'name' => $name,
                 'category_id' => $categories[$cat]->id,
                 'brand_id' => $brands[$brand]->id,
@@ -211,7 +212,15 @@ class DatabaseSeeder extends Seeder
                 'is_top_selling' => $top,
                 'is_active' => true,
                 'sold_count' => random_int(10, 400),
+                'cost_price' => round(($discount ?? $price) * 0.72),
+                'low_stock_alert' => 10,
             ]);
+            if (! $product->stockMovements()->exists()) {
+                StockMovement::create([
+                    'product_id' => $product->id, 'type' => 'opening', 'quantity' => $stock,
+                    'stock_before' => 0, 'stock_after' => $stock, 'unit_cost' => $product->cost_price, 'note' => 'Initial stock',
+                ]);
+            }
         }
     }
 

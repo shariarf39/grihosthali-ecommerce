@@ -31,24 +31,32 @@
             <button class="slider-nav next" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
         </div>
 
+    </div>
+</section>
+@endif
+
+@if(setting('home_show_features'))
+<section class="{{ $sliders->count() ? '' : 'hero' }}">
+    <div class="container">
         <div class="features">
-            <div class="feature-item"><div class="fi-icon"><i class="fa-solid fa-truck-fast"></i></div><div><h5>Fast Delivery</h5><p>All over Bangladesh</p></div></div>
-            <div class="feature-item"><div class="fi-icon"><i class="fa-solid fa-hand-holding-dollar"></i></div><div><h5>Cash on Delivery</h5><p>Pay when you receive</p></div></div>
-            <div class="feature-item"><div class="fi-icon"><i class="fa-solid fa-leaf"></i></div><div><h5>100% Natural</h5><p>Pure & traditional</p></div></div>
-            <div class="feature-item"><div class="fi-icon"><i class="fa-solid fa-headset"></i></div><div><h5>Support</h5><p>{{ setting('hotline', setting('phone', '24/7 help')) }}</p></div></div>
+            @for($i = 1; $i <= 4; $i++)
+                @if(setting('feature' . $i . '_title'))
+                    <div class="feature-item"><div class="fi-icon"><i class="{{ setting('feature' . $i . '_icon') }}"></i></div><div><h5>{{ setting('feature' . $i . '_title') }}</h5><p>{{ setting('feature' . $i . '_text') }}</p></div></div>
+                @endif
+            @endfor
         </div>
     </div>
 </section>
 @endif
 
 {{-- Featured categories --}}
-@if($featuredCategories->count())
+@if(setting('home_show_categories') && $featuredCategories->count())
 <section class="section">
     <div class="container">
         <div class="category-section-head">
             <span class="head-ornament"><i class="fa-solid fa-seedling"></i></span>
-            <h3>Featured Categories</h3>
-            <p>Get your desired product from featured category!</p>
+            <h3>{{ setting('categories_title') }}</h3>
+            <p>{{ setting('categories_subtitle') }}</p>
         </div>
         <div class="category-slider-wrap">
             <div class="swiper category-slider">
@@ -71,34 +79,26 @@
 @endif
 
 {{-- Top selling --}}
-@if($topSelling->count())
-    @include('partials.product-rail', ['title' => 'Top Selling Products', 'icon' => 'fa-solid fa-fire', 'products' => $topSelling, 'link' => route('shop', ['sort' => 'popular'])])
+@if(setting('home_show_top_selling') && $topSelling->count())
+    @include('partials.product-rail', ['title' => setting('top_selling_title'), 'icon' => 'fa-solid fa-fire', 'products' => $topSelling, 'link' => route('shop', ['sort' => 'popular'])])
+@endif
+
+@php $promoAfter = (int) setting('promo_after_section'); @endphp
+@if($promoAfter === 0 || $homeSections->isEmpty())
+    @include('partials.promo-banner')
 @endif
 
 {{-- Category sections --}}
 @foreach($homeSections as $section)
     @include('partials.product-rail', ['title' => $section->name, 'products' => $section->homeProducts, 'link' => route('category.show', $section->slug)])
 
-    @if($loop->index === 1)
-        {{-- Brand story banner between sections --}}
-        <section class="section">
-            <div class="container">
-                <div class="promo-banner">
-                    <div class="pb-text">
-                        <span class="eyebrow">Pure • Natural • Traditional</span>
-                        <h3>Premium Desi Ghee</h3>
-                        <p>খাঁটি স্বাদ, সবার রান্নায় — গ্রামের ঐতিহ্যবাহী পদ্ধতিতে তৈরি বিশুদ্ধ গাওয়া ঘি।</p>
-                        <a href="{{ route('shop', ['q' => 'ghee']) }}" class="btn btn-gold btn-lg">Order Now <i class="fa-solid fa-arrow-right"></i></a>
-                    </div>
-                    <div class="pb-img"><img src="{{ asset('uploads/sliders/ghee-hero.png') }}" alt="Grihosthali Premium Desi Ghee" loading="lazy"></div>
-                </div>
-            </div>
-        </section>
+    @if($promoAfter > 0 && ($loop->iteration === $promoAfter || ($loop->last && $promoAfter > $loop->count)))
+        @include('partials.promo-banner')
     @endif
 @endforeach
 
 {{-- Brands --}}
-@if($brands->count())
+@if(setting('home_show_brands') && $brands->count())
 <section class="section">
     <div class="container">
         <div class="section-head">
@@ -119,11 +119,11 @@
 @endif
 
 {{-- Just for you --}}
-@if($justForYou->count())
+@if(setting('home_show_just_for_you') && $justForYou->count())
 <section class="section">
     <div class="container">
         <div class="section-head">
-            <h3><i class="fa-solid fa-heart"></i> Just For You</h3>
+            <h3><i class="fa-solid fa-heart"></i> {{ setting('just_for_you_title') }}</h3>
         </div>
         <div class="product-grid">
             @foreach($justForYou as $product)
@@ -138,13 +138,13 @@
 @endif
 
 {{-- Testimonials --}}
-@if($testimonials->count())
+@if(setting('home_show_testimonials') && $testimonials->count())
 <section class="section testimonial-section" style="padding:48px 0;margin-top:20px">
     <div class="container">
         <div class="category-section-head">
             <span class="head-ornament"><i class="fa-solid fa-quote-left"></i></span>
-            <h3>What Our Customers Say</h3>
-            <p>Thousands of happy families trust Grihosthali every day</p>
+            <h3>{{ setting('testimonials_title') }}</h3>
+            <p>{{ setting('testimonials_subtitle') }}</p>
         </div>
         <div class="swiper testimonial-slider">
             <div class="swiper-wrapper">

@@ -7,7 +7,7 @@
     <div class="success-box">
         <div class="success-icon"><i class="fa-solid fa-check"></i></div>
         <h2>Thank you for your order!</h2>
-        <p class="bn" style="font-size:16px">আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। আমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবেন।</p>
+        <p class="bn" style="font-size:16px">{{ setting('order_success_message') }}</p>
 
         <div class="order-meta">
             <div><small>Order Number</small><strong>{{ $order->order_number }}</strong></div>

@@ -25,8 +25,16 @@ class DashboardController extends Controller
             'total_orders' => Order::count(),
             'pending' => Order::where('status', 'pending')->count(),
             'products' => Product::count(),
-            'customers' => User::where('is_admin', false)->count(),
-            'low_stock' => Product::where('stock', '<=', 5)->count(),
+            'customers' => \App\Models\CrmCustomer::count(),
+            'low_stock' => Product::lowStock()->count(),
+            'returns' => \App\Models\OrderReturn::where('status', 'requested')->count(),
+            // Gross profit this month on non-cancelled orders, using each product's current cost price.
+            'month_profit' => (float) OrderItem::join('orders', 'orders.id', '=', 'order_items.order_id')
+                ->join('products', 'products.id', '=', 'order_items.product_id')
+                ->whereNotIn('orders.status', ['cancelled', 'returned'])
+                ->where('orders.created_at', '>=', now()->startOfMonth())
+                ->whereNotNull('products.cost_price')
+                ->sum(DB::raw('order_items.total - products.cost_price * order_items.quantity')),
         ];
 
         $statusCounts = Order::select('status', DB::raw('count(*) as total'))->groupBy('status')->pluck('total', 'status');
@@ -47,9 +55,10 @@ class DashboardController extends Controller
 
         $recentOrders = Order::latest()->take(8)->get();
         $topProducts = Product::orderByDesc('sold_count')->take(5)->get();
-        $lowStock = Product::where('stock', '<=', 5)->orderBy('stock')->take(5)->get();
+        $lowStock = Product::lowStock()->orderBy('stock')->take(6)->get();
+        $followUps = \App\Models\CrmActivity::pendingFollowUps()->with('customer')->where('due_at', '<=', now()->endOfDay())->orderBy('due_at')->take(6)->get();
 
-        return view('admin.dashboard', compact('stats', 'statusCounts', 'chart', 'recentOrders', 'topProducts', 'lowStock'));
+        return view('admin.dashboard', compact('stats', 'statusCounts', 'chart', 'recentOrders', 'topProducts', 'lowStock', 'followUps'));
     }
 
     public function reports(Request $request)

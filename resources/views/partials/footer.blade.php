@@ -70,7 +70,7 @@
     <div class="footer-bottom">
         <div class="container">
             <p>{{ setting('copyright', '© ' . date('Y') . ' ' . setting('site_name', 'Grihosthali') . '. All rights reserved.') }}</p>
-            <p class="bn">খাঁটি স্বাদ, সবার রান্নায়</p>
+            <p class="bn">{{ setting('footer_tagline') }}</p>
         </div>
     </div>
 </footer>

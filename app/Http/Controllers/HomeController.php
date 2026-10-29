@@ -29,7 +29,7 @@ class HomeController extends Controller
             })
             ->filter(fn ($c) => $c->homeProducts->isNotEmpty());
 
-        $justForYou = Product::active()->inRandomOrder()->take(15)->get();
+        $justForYou = Product::active()->inRandomOrder()->take((int) setting('just_for_you_count'))->get();
 
         $testimonials = Testimonial::where('is_active', true)->latest()->get();
 

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Brand;
 use App\Models\Category;
 use App\Models\Product;
+use App\Services\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -18,7 +19,7 @@ class ProductController extends Controller
             ->when($request->q, fn ($q, $s) => $q->where(fn ($w) => $w->where('name', 'like', "%$s%")->orWhere('sku', 'like', "%$s%")))
             ->when($request->category, fn ($q, $c) => $q->where('category_id', $c))
             ->when($request->status !== null && $request->status !== '', fn ($q) => $q->where('is_active', $request->status))
-            ->when($request->stock === 'low', fn ($q) => $q->where('stock', '<=', 5))
+            ->when($request->stock === 'low', fn ($q) => $q->lowStock())
             ->latest()->paginate(20)->withQueryString();
 
         $categories = Category::orderBy('name')->get();
@@ -28,7 +29,7 @@ class ProductController extends Controller
 
     public function create()
     {
-        return view('admin.products.form', ['product' => new Product(['is_active' => true, 'stock' => 100])] + $this->options());
+        return view('admin.products.form', ['product' => new Product(['is_active' => true, 'stock' => 0, 'low_stock_alert' => 5])] + $this->options());
     }
 
     public function store(Request $request)
@@ -37,7 +38,9 @@ class ProductController extends Controller
         $data['image'] = $request->hasFile('image') ? upload_file($request->file('image'), 'products') : null;
         $data['gallery'] = $this->uploadGallery($request, []);
 
-        Product::create($data);
+        $stock = $data['stock'];
+        $product = Product::create(['stock' => 0] + $data);
+        Inventory::move($product, $stock, 'opening', null, 'Initial stock', $data['cost_price'] ?? null);
 
         return redirect()->route('admin.products.index')->with('success', 'Product created.');
     }
@@ -63,7 +66,11 @@ class ProductController extends Controller
         }
         $data['gallery'] = $this->uploadGallery($request, array_values($gallery));
 
+        // Stock edits from the product form are logged as adjustments, never written silently.
+        $stockChange = $data['stock'] - $product->stock;
+        unset($data['stock']);
         $product->update($data);
+        Inventory::move($product, $stockChange, 'adjustment', null, 'Edited from product form');
 
         return redirect()->route('admin.products.index')->with('success', 'Product updated.');
     }
@@ -107,6 +114,8 @@ class ProductController extends Controller
             'price' => 'required|numeric|min:0',
             'discount_price' => 'nullable|numeric|min:0|lt:price',
             'stock' => 'required|integer|min:0',
+            'low_stock_alert' => 'required|integer|min:0',
+            'cost_price' => 'nullable|numeric|min:0',
             'flag' => 'nullable|string|max:50',
             'short_description' => 'nullable|string|max:1000',
             'description' => 'nullable|string',

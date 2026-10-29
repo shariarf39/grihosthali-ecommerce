@@ -24,11 +24,16 @@
                 <div class="card-header"><h3>Pricing & Inventory</h3></div>
                 <div class="card-body">
                     <div class="form-row-3">
-                        <div class="form-group"><label>Regular Price (৳) *</label><input type="number" step="0.01" name="price" class="form-control" value="{{ old('price', $product->price) }}" required></div>
+                        <div class="form-group"><label>Selling Price (৳) *</label><input type="number" step="0.01" name="price" class="form-control" value="{{ old('price', $product->price) }}" required></div>
                         <div class="form-group"><label>Discount Price (৳)</label><input type="number" step="0.01" name="discount_price" class="form-control" value="{{ old('discount_price', $product->discount_price) }}"><div class="hint">Leave empty for no discount</div></div>
-                        <div class="form-group"><label>Stock *</label><input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" required></div>
+                        <div class="form-group"><label>Cost Price (৳)</label><input type="number" step="0.01" name="cost_price" class="form-control" value="{{ old('cost_price', $product->cost_price) }}"><div class="hint">Purchase cost — used for profit & stock value</div></div>
                     </div>
-                    <div class="form-group"><label>Unit / Size</label><input name="unit" class="form-control" value="{{ old('unit', $product->unit) }}" placeholder="e.g. 500 ml, 1 kg"></div>
+                    <div class="form-row-3">
+                        <div class="form-group"><label>{{ $product->exists ? 'Current Stock' : 'Opening Stock' }} *</label><input type="number" name="stock" class="form-control" value="{{ old('stock', $product->stock) }}" min="0" required>
+                            @if($product->exists)<div class="hint">Changes are logged. For purchases use <a href="{{ route('admin.inventory.index', ['q' => $product->name]) }}">Inventory → Stock In</a>.</div>@endif</div>
+                        <div class="form-group"><label>Low Stock Alert at *</label><input type="number" name="low_stock_alert" class="form-control" value="{{ old('low_stock_alert', $product->low_stock_alert ?? 5) }}" min="0" required></div>
+                        <div class="form-group"><label>Unit / Size</label><input name="unit" class="form-control" value="{{ old('unit', $product->unit) }}" placeholder="e.g. 500 ml, 1 kg"></div>
+                    </div>
                 </div>
             </div>
             <div class="card">

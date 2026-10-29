@@ -18,7 +18,7 @@
             </select>
             <select name="stock" class="form-control">
                 <option value="">Any stock</option>
-                <option value="low" @selected(request('stock') === 'low')>Low stock (≤ 5)</option>
+                <option value="low" @selected(request('stock') === 'low')>Low stock</option>
             </select>
             <button class="btn btn-light"><i class="fa-solid fa-magnifying-glass"></i> Filter</button>
         </form>
@@ -44,7 +44,7 @@
                             {{ taka($p->sell_price) }}
                             @if($p->hasDiscount())<div class="muted"><del>{{ taka($p->price) }}</del> −{{ $p->save_percent }}%</div>@endif
                         </td>
-                        <td><span class="badge badge-{{ $p->stock <= 5 ? 'danger' : 'success' }}">{{ $p->stock }}</span></td>
+                        <td><span class="badge badge-{{ $p->stock == 0 ? 'danger' : ($p->is_low_stock ? 'warning' : 'success') }}">{{ $p->stock }}</span></td>
                         <td>{{ $p->sold_count }}</td>
                         <td>
                             <form method="POST" action="{{ route('admin.products.toggle', $p) }}">@csrf

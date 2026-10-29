@@ -37,6 +37,13 @@ class AppServiceProvider extends ServiceProvider
 
         View::composer('admin.layouts.app', function ($view) {
             $view->with('pendingOrders', Order::where('status', 'pending')->count());
+            $view->with('badges', [
+                'returns' => \App\Models\OrderReturn::where('status', 'requested')->count(),
+                'follow_ups' => \App\Models\CrmActivity::pendingFollowUps()->where('due_at', '<=', now()->endOfDay())->count(),
+                'messages' => \App\Models\ContactMessage::where('is_read', false)->count(),
+                'low_stock' => \App\Models\Product::lowStock()->count(),
+                'reviews' => \App\Models\Review::where('is_approved', false)->count(),
+            ]);
         });
     }
 }

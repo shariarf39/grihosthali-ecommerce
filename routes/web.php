@@ -8,6 +8,7 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ReturnController;
 use App\Http\Controllers\ShopController;
 use Illuminate\Support\Facades\Route;
 
@@ -40,6 +41,8 @@ Route::post('/checkout/coupon/remove', [CheckoutController::class, 'removeCoupon
 Route::get('/order-success/{orderNumber}', [CheckoutController::class, 'success'])->name('checkout.success');
 
 Route::match(['get', 'post'], '/track-order', [PageController::class, 'trackOrder'])->name('track-order');
+Route::get('/returns/{orderNumber}', [ReturnController::class, 'create'])->name('returns.create');
+Route::post('/returns/{orderNumber}', [ReturnController::class, 'store'])->name('returns.store');
 Route::get('/contact', [PageController::class, 'contact'])->name('contact');
 Route::post('/contact', [PageController::class, 'contactStore'])->name('contact.store');
 Route::post('/subscribe', [PageController::class, 'subscribe'])->name('subscribe');
@@ -87,6 +90,26 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::put('orders/{order}', [Admin\OrderController::class, 'update'])->name('orders.update');
         Route::delete('orders/{order}', [Admin\OrderController::class, 'destroy'])->name('orders.destroy');
         Route::get('orders/{order}/invoice', [Admin\OrderController::class, 'invoice'])->name('orders.invoice');
+
+        Route::get('returns', [Admin\ReturnController::class, 'index'])->name('returns.index');
+        Route::get('orders/{order}/return', [Admin\ReturnController::class, 'create'])->name('returns.create');
+        Route::post('orders/{order}/return', [Admin\ReturnController::class, 'store'])->name('returns.store');
+        Route::get('returns/{return}', [Admin\ReturnController::class, 'show'])->name('returns.show');
+        Route::put('returns/{return}', [Admin\ReturnController::class, 'update'])->name('returns.update');
+
+        Route::get('inventory', [Admin\InventoryController::class, 'index'])->name('inventory.index');
+        Route::post('inventory/{product}/adjust', [Admin\InventoryController::class, 'adjust'])->name('inventory.adjust');
+        Route::get('inventory/movements', [Admin\InventoryController::class, 'movements'])->name('inventory.movements');
+        Route::get('inventory/export', [Admin\InventoryController::class, 'export'])->name('inventory.export');
+
+        Route::get('crm', [Admin\CrmController::class, 'index'])->name('crm.index');
+        Route::get('crm/export', [Admin\CrmController::class, 'export'])->name('crm.export');
+        Route::get('crm/follow-ups', [Admin\CrmController::class, 'followUps'])->name('crm.follow-ups');
+        Route::get('crm/{customer}', [Admin\CrmController::class, 'show'])->name('crm.show');
+        Route::put('crm/{customer}', [Admin\CrmController::class, 'update'])->name('crm.update');
+        Route::post('crm/{customer}/activities', [Admin\CrmController::class, 'storeActivity'])->name('crm.activities.store');
+        Route::post('crm/activities/{activity}/complete', [Admin\CrmController::class, 'completeActivity'])->name('crm.activities.complete');
+        Route::delete('crm/activities/{activity}', [Admin\CrmController::class, 'destroyActivity'])->name('crm.activities.destroy');
 
         Route::get('customers', [Admin\CustomerController::class, 'index'])->name('customers.index');
         Route::get('customers/{user}', [Admin\CustomerController::class, 'show'])->name('customers.show');

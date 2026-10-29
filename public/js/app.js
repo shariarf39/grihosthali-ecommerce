@@ -329,6 +329,19 @@
 
     $$('[data-auto-submit]').forEach((el) => el.addEventListener('change', () => el.form.submit()));
 
+    // Subtle fade-up of homepage/listing sections as they scroll into view.
+    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        const targets = $$('main .section, main .features, .promo-banner');
+        document.documentElement.classList.add('js-reveal');
+        const io = new IntersectionObserver((entries) => entries.forEach((en) => {
+            if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
+        }), { rootMargin: '0px 0px -60px 0px' });
+        targets.forEach((el) => { el.classList.add('reveal'); io.observe(el); });
+    }
+
+    const bar = $('.header-bottom');
+    bar && window.addEventListener('scroll', () => bar.classList.toggle('scrolled', window.scrollY > 140), { passive: true });
+
     // Flash messages rendered by the server
     (GH.flash || []).forEach((f) => toast(f.message, f.type));
 })();

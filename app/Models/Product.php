@@ -8,7 +8,7 @@ class Product extends Model
 {
     protected $fillable = [
         'category_id', 'brand_id', 'name', 'slug', 'sku', 'unit', 'short_description', 'description',
-        'price', 'discount_price', 'stock', 'image', 'gallery', 'flag', 'is_top_selling', 'is_active',
+        'price', 'discount_price', 'cost_price', 'stock', 'low_stock_alert', 'image', 'gallery', 'flag', 'is_top_selling', 'is_active',
         'sold_count', 'views', 'meta_title', 'meta_description',
     ];
 
@@ -18,6 +18,7 @@ class Product extends Model
         'is_active' => 'boolean',
         'price' => 'float',
         'discount_price' => 'float',
+        'cost_price' => 'float',
     ];
 
     public function category()
@@ -38,6 +39,21 @@ class Product extends Model
     public function approvedReviews()
     {
         return $this->hasMany(Review::class)->where('is_approved', true)->latest();
+    }
+
+    public function stockMovements()
+    {
+        return $this->hasMany(StockMovement::class)->latest();
+    }
+
+    public function scopeLowStock($query)
+    {
+        return $query->whereColumn('stock', '<=', 'low_stock_alert');
+    }
+
+    public function getIsLowStockAttribute(): bool
+    {
+        return $this->stock <= $this->low_stock_alert;
     }
 
     public function scopeActive($query)

@@ -10,7 +10,7 @@
         <div class="checkout-card">
             <div class="checkout-notice">
                 <i class="fa-solid fa-circle-info"></i>
-                অর্ডার কনফার্ম করতে আপনার নাম, ঠিকানা ও মোবাইল নাম্বার লিখে <strong>“অর্ডার কনফার্ম করুন”</strong> বাটনে ক্লিক করুন।
+                {{ setting('checkout_notice') }}
             </div>
 
             @if($errors->any())
@@ -103,7 +103,7 @@
             </div>
 
             <button type="submit" form="checkout-form" id="place-order-btn" class="btn btn-block btn-lg shake-btn" style="margin-top:18px;height:54px;font-size:16px">
-                <i class="fa-solid fa-lock"></i> <span class="bn">অর্ডার কনফার্ম করুন</span>
+                <i class="fa-solid fa-lock"></i> <span class="bn">{{ setting('checkout_button') }}</span>
             </button>
             <p style="text-align:center;font-size:12.5px;margin:12px 0 0;color:var(--muted)"><i class="fa-solid fa-shield-halved"></i> Your information is safe with us</p>
         </div>

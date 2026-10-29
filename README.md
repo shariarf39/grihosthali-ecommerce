@@ -23,11 +23,25 @@ point the domain's document root at `/public` (recommended). Update `APP_URL` in
 - Email: `admin@grihosthali.com`
 - Password: `admin123` ← **change this in Admin → Profile before going live**
 
-Admin features: dashboard (sales chart, order stats, low stock), orders (status, payment, invoice print,
-stock restored on cancel), sales reports, products (images, gallery, discount, badge, stock, SEO),
-categories (sub-categories, menu & homepage section toggles), brands, reviews moderation, coupons,
-hero sliders, testimonials, customers, contact messages, newsletter subscribers, static pages,
-and settings (logo, colours, phone/WhatsApp, social links, delivery charges, free-delivery threshold).
+Admin features:
+
+- **Dashboard** – sales chart, month profit estimate, follow-ups due, low stock, pending returns.
+- **Orders** – status/payment updates, invoice print, customer insight (delivery success rate), create return.
+- **Returns & Refunds** – customer or admin-created requests → Approved → Product Received (resellable items
+  restocked automatically, damaged ones not) → Refunded (cash/bKash/Nagad/bank + TrxID) or Replacement Sent.
+  Customers request returns from *Track Order* or *My Account* within the return window (Settings).
+- **CRM** – every buyer (guest or registered) keyed by phone; segments (New / Repeat / VIP / At Risk / Blocked),
+  tags, notes, activity timeline (calls, WhatsApp, notes), follow-up tasks with due dates, block fake-order
+  customers (blocked phones cannot check out), CSV export.
+- **Inventory** – every stock change is logged (sale, cancel, return, purchase, damage, adjustment, audit);
+  stock in with supplier cost, damage/loss, exact stock count, per-product low-stock alert, stock value,
+  full movement history, CSV export.
+- **Catalog & marketing** – products (cost price, images, gallery, discount, badge, SEO), categories, brands,
+  reviews, coupons, sliders, testimonials, subscribers, static pages.
+- **Settings** – logo, colours, contact & social, delivery charges/times, checkout texts, return window,
+  CRM thresholds, and the whole homepage: show/hide each section, feature strip, section titles, promo banner.
+
+`/public/...` URLs redirect permanently to the clean URL.
 
 ## Before launch
 

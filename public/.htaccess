@@ -5,6 +5,11 @@
 
     RewriteEngine On
 
+    # When the project folder is the web root (XAMPP), visitors typing ".../public/..." are sent
+    # to the clean URL. THE_REQUEST is the original request line, so internal rewrites never loop.
+    RewriteCond %{THE_REQUEST} \s(/\S*?)/public/(\S*)\s [NC]
+    RewriteRule ^ %1/%2 [L,R=301,NE]
+
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]

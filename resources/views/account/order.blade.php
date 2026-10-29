@@ -30,6 +30,7 @@
                 </tbody>
             </table>
         </div>
+        @include('partials.order-returns')
     </div>
 </div>
 @endsection

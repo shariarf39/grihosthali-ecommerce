@@ -5,9 +5,9 @@
 @section('content')
 <div class="stats">
     <div class="stat"><div class="icon green"><i class="fa-solid fa-sack-dollar"></i></div><div><small>Today's Sales</small><strong>{{ taka($stats['today_sales']) }}</strong><small>{{ $stats['today_orders'] }} orders today</small></div></div>
-    <div class="stat"><div class="icon gold"><i class="fa-solid fa-calendar"></i></div><div><small>This Month</small><strong>{{ taka($stats['month_sales']) }}</strong><small>Delivered total: {{ taka($stats['total_sales']) }}</small></div></div>
+    <div class="stat"><div class="icon gold"><i class="fa-solid fa-calendar"></i></div><div><small>This Month</small><strong>{{ taka($stats['month_sales']) }}</strong><small>Gross profit ≈ {{ taka($stats['month_profit']) }}</small></div></div>
     <div class="stat"><div class="icon blue"><i class="fa-solid fa-bag-shopping"></i></div><div><small>Total Orders</small><strong>{{ $stats['total_orders'] }}</strong><small><a href="{{ route('admin.orders.index', ['status' => 'pending']) }}">{{ $stats['pending'] }} pending</a></small></div></div>
-    <div class="stat"><div class="icon red"><i class="fa-solid fa-users"></i></div><div><small>Customers / Products</small><strong>{{ $stats['customers'] }} / {{ $stats['products'] }}</strong><small><a href="{{ route('admin.products.index', ['stock' => 'low']) }}">{{ $stats['low_stock'] }} low stock</a></small></div></div>
+    <div class="stat"><div class="icon red"><i class="fa-solid fa-users"></i></div><div><small>Customers / Products</small><strong>{{ $stats['customers'] }} / {{ $stats['products'] }}</strong><small><a href="{{ route('admin.inventory.index', ['filter' => 'low']) }}">{{ $stats['low_stock'] }} low stock</a> · <a href="{{ route('admin.returns.index', ['status' => 'requested']) }}">{{ $stats['returns'] }} returns</a></small></div></div>
 </div>
 
 <div class="grid-2">
@@ -61,11 +61,24 @@
             </div>
         </div>
         <div class="card">
-            <div class="card-header"><h3>Low Stock</h3></div>
+            <div class="card-header"><h3><i class="fa-regular fa-bell" style="color:var(--gold)"></i> Follow-ups Due</h3><a href="{{ route('admin.crm.follow-ups') }}" class="btn btn-sm btn-light">All</a></div>
+            <div class="table-wrap">
+                <table class="table">
+                    @forelse($followUps as $f)
+                        <tr><td><a href="{{ route('admin.crm.show', $f->crm_customer_id) }}">{{ $f->customer?->name }}</a><div class="muted">{{ \Illuminate\Support\Str::limit($f->message, 40) }}</div></td>
+                            <td><span class="badge badge-{{ $f->due_at->isPast() ? 'danger' : 'warning' }}">{{ $f->due_at->format('d M') }}</span></td></tr>
+                    @empty
+                        <tr><td class="empty">No follow-ups due today.</td></tr>
+                    @endforelse
+                </table>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-header"><h3>Low Stock</h3><a href="{{ route('admin.inventory.index', ['filter' => 'low']) }}" class="btn btn-sm btn-light">Inventory</a></div>
             <div class="table-wrap">
                 <table class="table">
                     @forelse($lowStock as $p)
-                        <tr><td><a href="{{ route('admin.products.edit', $p) }}">{{ \Illuminate\Support\Str::limit($p->name, 30) }}</a></td><td><span class="badge badge-danger">{{ $p->stock }} left</span></td></tr>
+                        <tr><td><a href="{{ route('admin.inventory.index', ['q' => $p->name]) }}">{{ \Illuminate\Support\Str::limit($p->name, 30) }}</a></td><td><span class="badge badge-{{ $p->stock ? 'warning' : 'danger' }}">{{ $p->stock }} left</span></td></tr>
                     @empty
                         <tr><td class="empty">All products are well stocked 🎉</td></tr>
                     @endforelse

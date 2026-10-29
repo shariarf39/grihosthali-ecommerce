@@ -26,10 +26,12 @@ class PageController extends Controller
                 'phone' => 'required|string',
             ]);
             $order = Order::where('order_number', strtoupper(trim($data['order_number'])))
-                ->where('phone', trim($data['phone']))->with('items')->first();
+                ->whereIn('phone', [trim($data['phone']), normalize_phone($data['phone'])])->with('items', 'returns')->first();
             if (! $order) {
                 return back()->withInput()->with('error', 'No order found with this order number and phone.');
             }
+            // Remember the verified lookup so a guest can request a return for this order.
+            session()->push('verified_orders', $order->order_number);
         }
 
         return view('track-order', compact('order'));

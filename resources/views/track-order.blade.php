@@ -35,6 +35,7 @@
                     <tr><td colspan="2"><strong>Total (incl. delivery)</strong></td><td style="text-align:right"><strong>{{ taka($order->total) }}</strong></td></tr>
                 </tbody>
             </table>
+            @include('partials.order-returns')
         @endif
     </div>
 </div>

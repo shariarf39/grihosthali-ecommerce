@@ -18,7 +18,7 @@ class AccountController extends Controller
 
     public function order(Request $request, string $orderNumber)
     {
-        $order = $request->user()->orders()->where('order_number', $orderNumber)->with('items')->firstOrFail();
+        $order = $request->user()->orders()->where('order_number', $orderNumber)->with('items', 'returns')->firstOrFail();
 
         return view('account.order', compact('order'));
     }

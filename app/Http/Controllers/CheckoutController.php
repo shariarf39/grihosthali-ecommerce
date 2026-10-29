@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Coupon;
+use App\Models\CrmCustomer;
 use App\Models\Order;
 use App\Models\Product;
 use App\Services\Cart;
+use App\Services\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -85,6 +87,17 @@ class CheckoutController extends Controller
             return redirect()->route('home')->with('error', 'Your cart is empty.');
         }
 
+        $data['phone'] = normalize_phone($data['phone']);
+        if (CrmCustomer::where('phone', $data['phone'])->where('is_blocked', true)->exists()) {
+            return back()->withInput()->with('error', 'We could not place this order. Please call ' . setting('hotline', setting('phone')) . ' to order.');
+        }
+
+        foreach ($items as $item) {
+            if ($item['qty'] > $item['product']->stock) {
+                return redirect()->route('cart.index')->with('error', "Only {$item['product']->stock} \"{$item['product']->name}\" left in stock. Please update your cart.");
+            }
+        }
+
         $subtotal = $this->cart->subtotal();
         [$coupon, $discount] = $this->currentCoupon($subtotal);
         $rates = self::shippingRates();
@@ -118,12 +131,11 @@ class CheckoutController extends Controller
                     'quantity' => $item['qty'],
                     'total' => $item['total'],
                 ]);
-                Product::whereKey($item['product']->id)->update([
-                    'stock' => DB::raw('GREATEST(stock - ' . (int) $item['qty'] . ', 0)'),
-                    'sold_count' => DB::raw('sold_count + ' . (int) $item['qty']),
-                ]);
+                Inventory::move($item['product'], -$item['qty'], 'sale', $order->order_number);
+                Product::whereKey($item['product']->id)->increment('sold_count', $item['qty']);
             }
             $coupon?->increment('used');
+            CrmCustomer::syncFromOrder($order);
 
             return $order;
         });

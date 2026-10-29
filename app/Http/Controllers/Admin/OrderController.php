@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CrmActivity;
 use App\Models\Order;
 use App\Models\Product;
+use App\Services\Inventory;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -27,37 +29,54 @@ class OrderController extends Controller
 
     public function show(Order $order)
     {
-        $order->load('items.product', 'user');
+        $order->load('items.product', 'user', 'returns');
+        $customer = $order->crm_customer_id
+            ? \App\Models\CrmCustomer::withStats()->find($order->crm_customer_id)
+            : null;
 
-        return view('admin.orders.show', compact('order'));
+        return view('admin.orders.show', compact('order', 'customer'));
     }
 
     public function update(Request $request, Order $order)
     {
         $data = $request->validate([
             'status' => 'required|in:' . implode(',', array_keys(Order::STATUSES)),
-            'payment_status' => 'required|in:unpaid,paid,refunded',
+            'payment_status' => 'required|in:unpaid,paid,partially_refunded,refunded',
             'admin_note' => 'nullable|string|max:2000',
         ]);
 
         DB::transaction(function () use ($order, $data) {
-            $wasCancelled = in_array($order->status, ['cancelled', 'returned']);
-            $nowCancelled = in_array($data['status'], ['cancelled', 'returned']);
+            // Only cancellation puts stock back. "Returned" stock comes back through the Returns module,
+            // where each item is inspected (resellable vs damaged) before restocking.
+            $wasCancelled = $order->status === 'cancelled';
+            $nowCancelled = $data['status'] === 'cancelled';
 
-            // Return stock when an order is cancelled, take it again if it is reopened.
             if ($wasCancelled !== $nowCancelled) {
                 foreach ($order->items as $item) {
-                    if ($item->product_id) {
-                        $sign = $nowCancelled ? 1 : -1;
-                        Product::whereKey($item->product_id)->update([
-                            'stock' => DB::raw('GREATEST(stock + ' . ($sign * $item->quantity) . ', 0)'),
-                            'sold_count' => DB::raw('GREATEST(sold_count - ' . ($sign * $item->quantity) . ', 0)'),
-                        ]);
+                    if (! $item->product_id) {
+                        continue;
                     }
+                    Inventory::move($item->product_id, $nowCancelled ? $item->quantity : -$item->quantity,
+                        $nowCancelled ? 'cancel_restore' : 'reopen', $order->order_number);
+                    Product::whereKey($item->product_id)->update([
+                        'sold_count' => DB::raw('GREATEST(sold_count ' . ($nowCancelled ? '-' : '+') . ' ' . (int) $item->quantity . ', 0)'),
+                    ]);
                 }
             }
-            if ($data['status'] === 'delivered' && $order->payment_method === 'cod') {
-                $data['payment_status'] = 'paid';
+            if ($data['status'] === 'delivered') {
+                $data['delivered_at'] = $order->delivered_at ?? now();
+                if ($order->payment_method === 'cod' && $data['payment_status'] === 'unpaid') {
+                    $data['payment_status'] = 'paid';
+                }
+            }
+
+            if ($order->status !== $data['status'] && $order->crm_customer_id) {
+                CrmActivity::create([
+                    'crm_customer_id' => $order->crm_customer_id,
+                    'user_id' => auth()->id(),
+                    'type' => 'system',
+                    'message' => "Order #{$order->order_number} status changed: " . Order::STATUSES[$order->status] . ' → ' . Order::STATUSES[$data['status']],
+                ]);
             }
             $order->update($data);
         });

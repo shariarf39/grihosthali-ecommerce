@@ -9,6 +9,21 @@ if (! function_exists('setting')) {
     }
 }
 
+if (! function_exists('normalize_phone')) {
+    /** Bangladeshi mobile numbers in one canonical form: 01XXXXXXXXX */
+    function normalize_phone(?string $phone): string
+    {
+        $digits = preg_replace('/\D/', '', (string) $phone);
+        if (str_starts_with($digits, '880')) {
+            $digits = substr($digits, 2);
+        } elseif (str_starts_with($digits, '88') && strlen($digits) === 13) {
+            $digits = substr($digits, 2);
+        }
+
+        return $digits;
+    }
+}
+
 if (! function_exists('taka')) {
     /** Format an amount as Bangladeshi Taka, e.g. ৳1,445 */
     function taka($amount): string
