@@ -72,7 +72,7 @@ class CategoryController extends Controller
             'sort_order' => 'nullable|integer|min:0',
             'image' => 'nullable|image|max:2048',
         ]);
-        $data['slug'] = Str::slug($data['slug'] ?: $data['name']);
+        $data['slug'] = Str::slug(($data['slug'] ?? null) ?: $data['name']);
         $data['sort_order'] = $data['sort_order'] ?? 0;
         $data['is_active'] = $request->boolean('is_active');
         $data['show_in_menu'] = $request->boolean('show_in_menu');

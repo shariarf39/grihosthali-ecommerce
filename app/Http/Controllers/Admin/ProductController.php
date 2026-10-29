@@ -116,7 +116,7 @@ class ProductController extends Controller
             'gallery.*' => 'nullable|image|max:4096',
         ], ['discount_price.lt' => 'Discount price must be less than the regular price.']);
 
-        $data['slug'] = Str::slug($data['slug'] ?: $data['name']);
+        $data['slug'] = Str::slug(($data['slug'] ?? null) ?: $data['name']);
         if (Product::where('slug', $data['slug'])->where('id', '!=', $product?->id)->exists()) {
             $data['slug'] .= '-' . Str::lower(Str::random(4));
         }

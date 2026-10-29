@@ -55,7 +55,7 @@ class PageController extends Controller
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('pages', 'slug')->ignore($page?->id)],
             'content' => 'nullable|string',
         ]);
-        $data['slug'] = Str::slug($data['slug'] ?: $data['title']);
+        $data['slug'] = Str::slug(($data['slug'] ?? null) ?: $data['title']);
         $data['is_active'] = $request->boolean('is_active');
 
         return $data;

@@ -64,7 +64,7 @@ class BrandController extends Controller
             'slug' => ['nullable', 'string', 'max:255', Rule::unique('brands', 'slug')->ignore($brand?->id)],
             'logo' => 'nullable|image|max:2048',
         ]);
-        $data['slug'] = Str::slug($data['slug'] ?: $data['name']);
+        $data['slug'] = Str::slug(($data['slug'] ?? null) ?: $data['name']);
         $data['is_active'] = $request->boolean('is_active');
         unset($data['logo']);
 

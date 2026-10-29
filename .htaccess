@@ -1,0 +1,11 @@
+# Lets the site run straight from XAMPP (http://localhost/Client_project/grihosthali_ecommerce)
+# or from shared hosting where the project root is the web root.
+# Static files are served from /public; every other request goes to the root index.php front controller.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    RewriteCond %{REQUEST_URI} \.(css|js|map|png|jpe?g|gif|svg|webp|avif|ico|woff2?|ttf|eot|txt|pdf|mp4|webm)$ [NC]
+    RewriteRule ^(.*)$ public/$1 [L]
+
+    RewriteRule !^index\.php$ index.php [L]
+</IfModule>
