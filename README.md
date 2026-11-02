@@ -57,6 +57,16 @@ Admin features:
 
 **Configuration is cached** (`php artisan config:cache`) because XAMPP on Windows runs PHP multi-threaded and can
 otherwise occasionally fail to read `.env`. After editing `.env`, run `php artisan config:cache` again.
+Configuration caches contain machine-specific absolute paths: never copy `bootstrap/cache/config.php` from local
+development to hosting. After uploading the app and setting the hosting `.env`, clear any uploaded cache and rebuild
+it on the server with `php artisan config:clear` followed by `php artisan config:cache`.
+If the server does not have SSH/terminal access, remove `bootstrap/cache/config.php` from the hosting file manager
+and ask the host to clear Laravel's configuration cache. Ensure `storage/framework/sessions` exists and is writable
+by PHP when using `SESSION_DRIVER=file`.
+
+**Safety net:** `bootstrap/app.php` checks the cached config on every boot. If it was built for a different folder
+(e.g. uploaded from XAMPP), it is deleted automatically and the server's own `.env` is used. Folders accidentally
+created on Linux with Windows-path names (`C:\xampp\...\storage\logs`) are removed too.
 
 **Brand:** logo, white logo, favicon, phone icon and social share image are uploaded in Admin → Store Settings →
 Logo & Colors; homepage banners (including the brand cover) in Admin → Marketing → Sliders.
@@ -65,6 +75,24 @@ On an existing database, run `php artisan migrate` then `php artisan db:seed --c
 (existing admins become Super Admin).
 
 `/public/...` URLs redirect permanently to the clean URL.
+
+## Deploying to hosting (e.g. grihosthali.com)
+
+1. Upload everything **except** `.env`, `bootstrap/cache/config.php` and the contents of `storage/logs` and
+   `storage/framework/{sessions,views,cache}` (keep those folders, just empty).
+2. Create the server `.env` (copy `.env.example`) and set:
+   ```env
+   APP_ENV=production
+   APP_DEBUG=false
+   APP_URL=https://grihosthali.com
+   DB_DATABASE=...  DB_USERNAME=...  DB_PASSWORD=...
+   ```
+   Keep the same `APP_KEY` as local if you imported the local database (encrypted courier/SMTP keys depend on it);
+   otherwise run `php artisan key:generate` and re-enter courier API keys and the SMTP password in admin.
+3. Make `storage/` and `bootstrap/cache/` writable (755/775), and `public/uploads/` writable for image uploads.
+4. Import the database (or run `php artisan migrate --seed --force`), then optionally `php artisan config:cache`
+   **on the server**.
+5. With `APP_DEBUG=false`, visitors see branded 404/500 pages — never file paths or code.
 
 ## Before launch
 
