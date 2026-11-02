@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Dashboard') | {{ setting('site_name', 'Grihosthali') }} Admin</title>
-    <link rel="icon" href="{{ asset('images/favicon.svg') }}">
+    <link rel="icon" href="{{ setting('favicon') ? upload_url(setting('favicon')) : asset('images/favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600&family=Noto+Serif+Bengali:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
     <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
@@ -48,6 +48,7 @@
             ['Coupons', 'admin.coupons.index', 'fa-solid fa-ticket', 'marketing.manage'],
             ['Sliders', 'admin.sliders.index', 'fa-solid fa-images', 'marketing.manage'],
             ['Testimonials', 'admin.testimonials.index', 'fa-solid fa-quote-left', 'marketing.manage'],
+            ['Showcase Gallery', 'admin.gallery.index', 'fa-solid fa-panorama', 'marketing.manage'],
         ], 'fa-solid fa-bullhorn'],
         ['Website', [
             ['Pages', 'admin.pages.index', 'fa-solid fa-file-lines', 'pages.manage'],
@@ -76,9 +77,15 @@
 @endphp
 
 <aside class="admin-sidebar" id="sidebar">
-    <a href="{{ route('admin.dashboard') }}" class="admin-brand">
-        <span class="mark"><i class="fa-solid fa-seedling"></i></span>
-        <span class="brand-text"><strong>গৃহস্থালী</strong><small>ADMIN PANEL</small></span>
+    <a href="{{ route('admin.dashboard') }}" class="admin-brand {{ setting('logo_white') ? 'has-logo' : '' }}">
+        @if(setting('logo_white'))
+            <img class="brand-logo" src="{{ upload_url(setting('logo_white')) }}" alt="{{ setting('site_name') }}">
+            <img class="brand-icon" src="{{ setting('favicon') ? upload_url(setting('favicon')) : asset('images/favicon.svg') }}" alt="">
+            <small class="brand-tag">ADMIN</small>
+        @else
+            <span class="mark"><i class="fa-solid fa-seedling"></i></span>
+            <span class="brand-text"><strong>গৃহস্থালী</strong><small>ADMIN PANEL</small></span>
+        @endif
     </a>
 
     <nav class="admin-nav">

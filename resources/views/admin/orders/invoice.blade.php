@@ -29,7 +29,11 @@
 <div class="invoice">
     <div class="head">
         <div>
-            <div class="brand-bn">গৃহস্থালী</div>
+            @if(setting('logo'))
+                <img src="{{ upload_url(setting('logo')) }}" alt="{{ setting('site_name') }}" style="height:64px">
+            @else
+                <div class="brand-bn">গৃহস্থালী</div>
+            @endif
             <div class="brand-en">{{ strtoupper(setting('site_name', 'Grihosthali')) }}</div>
             <div style="margin-top:10px;color:#666">{{ setting('address') }}<br>{{ setting('phone') }} · {{ setting('email') }}</div>
         </div>

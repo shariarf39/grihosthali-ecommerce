@@ -158,6 +158,11 @@ Route::prefix('admin')->name('admin.')->group(function () {
             Route::resource('coupons', Admin\CouponController::class)->except('show');
             Route::resource('sliders', Admin\SliderController::class)->except('show');
             Route::resource('testimonials', Admin\TestimonialController::class)->except('show');
+            Route::get('gallery', [Admin\GalleryController::class, 'index'])->name('gallery.index');
+            Route::post('gallery', [Admin\GalleryController::class, 'store'])->name('gallery.store');
+            Route::post('gallery/settings', [Admin\GalleryController::class, 'updateSettings'])->name('gallery.settings');
+            Route::put('gallery/{gallery}', [Admin\GalleryController::class, 'update'])->name('gallery.update');
+            Route::delete('gallery/{gallery}', [Admin\GalleryController::class, 'destroy'])->name('gallery.destroy');
         });
 
         Route::resource('pages', Admin\PageController::class)->except('show')->middleware('can:pages.manage');

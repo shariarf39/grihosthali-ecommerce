@@ -1,11 +1,11 @@
 /* Grihosthali Admin Panel */
 :root {
-    --primary: #1f4d36;
-    --primary-dark: #163a28;
-    --primary-soft: #e9f1ec;
-    --gold: #c9a24a;
-    --sidebar: #12261c;
-    --sidebar-hover: #1b3729;
+    --primary: #084645;
+    --primary-dark: #063433;
+    --primary-soft: #e5f0ef;
+    --gold: #e0a421;
+    --sidebar: #062f2e;
+    --sidebar-hover: #0b3f3e;
     --title: #1d2433;
     --body: #5b6475;
     --muted: #8a93a3;
@@ -28,7 +28,7 @@ img { max-width: 100%; }
 body { -webkit-font-smoothing: antialiased; }
 .admin-sidebar {
     position: fixed; top: 0; left: 0; bottom: 0; width: var(--sidebar-w); z-index: 200;
-    background: linear-gradient(180deg, #11261b 0%, #0d1f16 100%); color: #b9c8bf;
+    background: linear-gradient(180deg, #073a39 0%, #052928 100%); color: #b9c8bf;
     display: flex; flex-direction: column; transition: width .25s ease, transform .3s ease;
 }
 .admin-brand { display: flex; align-items: center; gap: 12px; padding: 16px 20px; height: var(--topbar-h); border-bottom: 1px solid rgba(255,255,255,.06); flex-shrink: 0; overflow: hidden; }
@@ -422,3 +422,30 @@ textarea.form-control { height: auto; padding: 10px 12px; resize: vertical; }
     .perm-grid { grid-template-columns: 1fr; }
     .stats[style] { grid-template-columns: 1fr !important; }
 }
+
+/* ---------- Showcase gallery admin ---------- */
+.upload-drop { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 16px; border: 2px dashed var(--border); border-radius: 12px; background: #fafbfc; margin-bottom: 20px; }
+.upload-drop > i { font-size: 28px; color: var(--gold); }
+.upload-drop strong { display: block; color: var(--title); }
+.upload-drop small { color: var(--muted); }
+.upload-drop > div { flex: 1; min-width: 160px; }
+.gallery-admin-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(190px, 1fr)); gap: 16px; }
+.gallery-item { display: flex; flex-direction: column; gap: 8px; padding: 10px; border: 1px solid var(--border); border-radius: 12px; background: #fff; }
+.gallery-item.off { opacity: .55; }
+.gallery-item .form-control { height: 36px; font-size: 13px; }
+.gi-thumb { position: relative; aspect-ratio: 4 / 5; border-radius: 9px; overflow: hidden; background: #f3f3f3; }
+.gi-thumb img { width: 100%; height: 100%; object-fit: cover; }
+.gi-replace { position: absolute; right: 8px; bottom: 8px; width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.95); color: var(--title); display: flex; align-items: center; justify-content: center; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+.gi-row { display: flex; align-items: center; gap: 6px; }
+
+/* ---------- Brand logo in the sidebar ---------- */
+.admin-brand.has-logo { justify-content: flex-start; gap: 10px; }
+.admin-brand .brand-logo { height: 42px; width: auto; max-width: 170px; object-fit: contain; }
+.admin-brand .brand-icon { display: none; width: 40px; height: 40px; border-radius: 10px; }
+.admin-brand .brand-tag { margin-left: auto; font-size: 10px; letter-spacing: 1.5px; color: #8fb3ad; border: 1px solid rgba(255,255,255,.15); border-radius: 4px; padding: 2px 6px; }
+.sidebar-mini .admin-brand .brand-logo, .sidebar-mini .admin-brand .brand-tag { display: none; }
+.sidebar-mini .admin-brand .brand-icon { display: block; }
+.login-art { background: linear-gradient(140deg, rgba(6, 47, 46, .88), rgba(8, 70, 69, .72)), url('../uploads/sliders/cover-grihosthali.jpg') center/cover; }
+.logo-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 991px) { .logo-grid { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 600px) { .logo-grid { grid-template-columns: 1fr; } }

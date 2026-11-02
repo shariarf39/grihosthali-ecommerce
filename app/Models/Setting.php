@@ -22,8 +22,8 @@ class Setting extends Model
         'return_days' => '7',
         'crm_vip_amount' => '10000',
         'crm_inactive_days' => '90',
-        'primary_color' => '#1f4d36',
-        'secondary_color' => '#c9a24a',
+        'primary_color' => '#084645',
+        'secondary_color' => '#e0a421',
 
         // Homepage sections (1 = shown)
         'home_show_features' => '1',
@@ -33,6 +33,14 @@ class Setting extends Model
         'home_show_brands' => '1',
         'home_show_just_for_you' => '1',
         'home_show_testimonials' => '1',
+        'home_show_gallery' => '1',
+        'cursor_trail' => '1',
+        'cursor_style' => 'honey',
+        'gallery_eyebrow' => 'Follow along',
+        'gallery_title' => '@grihosthali',
+        'gallery_subtitle' => 'Real kitchens, real families — see how our customers enjoy গৃহস্থালী every day.',
+        'gallery_button_text' => 'Follow @grihosthali',
+        'gallery_speed' => '3200',
         'feature1_icon' => 'fa-solid fa-truck-fast', 'feature1_title' => 'Fast Delivery', 'feature1_text' => 'All over Bangladesh',
         'feature2_icon' => 'fa-solid fa-hand-holding-dollar', 'feature2_title' => 'Cash on Delivery', 'feature2_text' => 'Pay when you receive',
         'feature3_icon' => 'fa-solid fa-leaf', 'feature3_title' => '100% Natural', 'feature3_text' => 'Pure & traditional',
@@ -55,7 +63,7 @@ class Setting extends Model
         'checkout_button' => 'অর্ডার কনফার্ম করুন',
         'order_success_message' => 'আপনার অর্ডারটি সফলভাবে গ্রহণ করা হয়েছে। আমাদের প্রতিনিধি শীঘ্রই আপনার সাথে যোগাযোগ করবেন।',
         'return_policy_note' => 'ডেলিভারির পর নির্দিষ্ট সময়ের মধ্যে ক্ষতিগ্রস্ত, ভুল বা মানহীন পণ্য ফেরত দিতে পারবেন।',
-        'footer_tagline' => 'খাঁটি স্বাদ, সবার রান্নায়',
+        'footer_tagline' => 'খাঁটিতেই তৃপ্তি',
     ];
 
     public static function cached(): array

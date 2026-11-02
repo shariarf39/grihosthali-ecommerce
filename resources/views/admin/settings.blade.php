@@ -43,6 +43,20 @@
                         <label class="check"><input type="checkbox" name="{{ $k }}" value="1" @checked(setting($k))> {{ $l }}</label>
                     @endforeach
                 </div>
+
+                <h4 class="settings-section-title">Mouse cursor (desktop)</h4>
+                <div class="form-row">
+                    <div class="form-group"><label>Cursor style</label>
+                        <select name="cursor_style" class="form-control">
+                            @foreach(['honey' => 'Honey gold — golden arrow & hand with warm glow trail', 'leaf' => 'Leaf — green leaf with gold ring & star trail', 'off' => 'Normal system cursor'] as $k => $l)
+                                <option value="{{ $k }}" @selected(setting('cursor_style') === $k)>{{ $l }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="form-group"><label>&nbsp;</label>
+                        <label class="check"><input type="checkbox" name="cursor_trail" value="1" @checked(setting('cursor_trail'))> Show the motion trail behind the cursor</label>
+                    </div>
+                </div>
                 <p class="hint">Category product sections are controlled per category (Categories → “Show as a product section on the homepage”). Hero slides are managed under Sliders.</p>
 
                 <h4 class="settings-section-title">Feature strip (below slider)</h4>
@@ -145,11 +159,18 @@
                     <div class="form-group"><label>Primary Color</label><input type="color" name="primary_color" class="form-control" style="padding:4px" value="{{ setting('primary_color', '#1f4d36') }}"></div>
                     <div class="form-group"><label>Accent Color</label><input type="color" name="secondary_color" class="form-control" style="padding:4px" value="{{ setting('secondary_color', '#c9a24a') }}"></div>
                 </div>
-                <div class="form-row">
-                    @foreach([$img('logo', 'Logo', 'Leave empty to use the Bangla text logo'), $img('favicon', 'Favicon'), $img('payment_banner', 'Payment Methods Banner (footer)')] as $f)
+                <div class="form-row logo-grid">
+                    @foreach([
+                        $img('logo', 'Logo (for light backgrounds)', 'Header, footer, invoices. Transparent PNG, about 800×360. Leave empty to use the Bangla text logo.') + ['bg' => '#ffffff'],
+                        $img('logo_white', 'White logo (for dark backgrounds)', 'Admin panel, emails, login page. Transparent PNG.') + ['bg' => setting('primary_color', '#084645')],
+                        $img('favicon', 'Favicon / browser icon', 'Square PNG, 64×64 or larger.') + ['bg' => '#ffffff'],
+                        $img('app_icon', 'Phone home-screen icon', 'Square PNG, 192×192.') + ['bg' => '#ffffff'],
+                        $img('share_image', 'Social share image', 'Shown when the site link is shared on Facebook / WhatsApp. 1200×630 recommended.') + ['bg' => '#ffffff'],
+                        $img('payment_banner', 'Payment Methods Banner (footer)') + ['bg' => '#ffffff'],
+                    ] as $f)
                         <div class="form-group">
                             <label>{{ $f['label'] }}</label>
-                            <img id="prev-{{ $f['key'] }}" src="{{ $f['val'] ? upload_url($f['val']) : '' }}" class="img-preview" style="max-height:90px;{{ $f['val'] ? '' : 'display:none' }}" alt="">
+                            <img id="prev-{{ $f['key'] }}" src="{{ $f['val'] ? upload_url($f['val']) : '' }}" class="img-preview" style="max-height:110px;background:{{ $f['bg'] }};{{ $f['val'] ? '' : 'display:none' }}" alt="">
                             <input type="file" name="{{ $f['key'] }}" accept="image/*" class="form-control" style="padding:8px" data-preview="#prev-{{ $f['key'] }}">
                             @if($f['hint'])<div class="hint">{{ $f['hint'] }}</div>@endif
                         </div>

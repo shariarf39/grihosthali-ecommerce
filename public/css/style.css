@@ -90,7 +90,7 @@ h1, h2, h3, h4, h5 { color: var(--title); margin: 0 0 .5em; line-height: 1.3; fo
 .mobile-menu-toggle { display: none; background: none; border: 0; font-size: 22px; color: var(--title); padding: 4px; }
 
 .logo { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
-.logo img { max-width: 190px; height: 52px; object-fit: contain; }
+.logo img { max-width: 200px; height: 62px; width: auto; object-fit: contain; }
 .logo-text { display: flex; flex-direction: column; align-items: center; line-height: 1; }
 .logo-text .leaf { color: var(--primary); font-size: 13px; margin-bottom: 2px; }
 .logo-text .bn-name { font-family: 'Noto Serif Bengali', var(--font-bn); font-weight: 700; font-size: 30px; color: var(--primary); letter-spacing: .5px; }
@@ -708,7 +708,7 @@ textarea.form-control { height: auto; padding: 12px 14px; resize: vertical; }
     .header-right { gap: 18px; }
     .header-action span.label { display: none; }
     .logo-text .bn-name { font-size: 24px; }
-    .logo img { height: 42px; max-width: 150px; }
+    .logo img { height: 46px; max-width: 150px; }
     .hero { padding-top: 12px; }
     .hero-slide { aspect-ratio: 16 / 8; }
     .hero-caption { max-width: 78%; padding: 0 5%; }
@@ -790,11 +790,6 @@ textarea.form-control { height: auto; padding: 12px 14px; resize: vertical; }
 .header-bottom.scrolled { box-shadow: 0 6px 18px rgba(0, 0, 0, .14); }
 ::selection { background: var(--secondary); color: #fff; }
 
-/* Scroll reveal: only active when JS has run, and never for reduced-motion users. */
-@media (prefers-reduced-motion: no-preference) {
-    .js-reveal .reveal { opacity: 0; transform: translateY(24px); transition: opacity .6s ease, transform .6s ease; }
-    .js-reveal .reveal.in { opacity: 1; transform: none; }
-}
 
 .courier-track { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; padding: 14px 16px; margin: 0 0 20px; border-radius: 10px; background: var(--primary-soft); }
 .courier-track > i { font-size: 22px; color: var(--primary); }
@@ -875,3 +870,10 @@ textarea.form-control { height: auto; padding: 12px 14px; resize: vertical; }
 .header-bottom.scrolled .main-menu > li > a { white-space: nowrap; }
 @media (max-width: 1279px) { .header-bottom .main-menu > li > a { padding-left: 11px; padding-right: 11px; font-size: 13.5px; } }
 @media (max-width: 1100px) { .header-bottom .main-menu > li > a { padding-left: 8px; padding-right: 8px; font-size: 13px; } .header-bottom .main-menu > li > a .fa-house { display: none; } }
+
+/* Brand logo image in the footer sits a little larger */
+.footer-logo img { height: 74px; max-width: 220px; }
+
+/* The header (logo, search, icons) sits above the pinned category bar so its dropdowns
+   — "More" menu and live search results — open over the bar and the slider, never behind them. */
+header.header { position: relative; z-index: 950; }

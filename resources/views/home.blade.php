@@ -137,6 +137,44 @@
 </section>
 @endif
 
+{{-- 3D rotating showcase gallery (Admin → Marketing → Showcase Gallery) --}}
+@if($gallery->count() >= 3)
+<section class="section showcase" aria-label="{{ setting('gallery_title') }}">
+    <div class="container">
+        <div class="showcase-head" data-reveal>
+            <span class="showcase-eyebrow">{{ setting('gallery_eyebrow') }}</span>
+            <h2 class="showcase-title" data-split>{{ setting('gallery_title') }}</h2>
+            @if(setting('gallery_subtitle'))<p>{{ setting('gallery_subtitle') }}</p>@endif
+        </div>
+    </div>
+    <div class="swiper showcase-slider" data-speed="{{ (int) setting('gallery_speed') }}">
+        <div class="swiper-wrapper">
+            @foreach($gallery as $img)
+                <div class="swiper-slide showcase-card">
+                    @if($img->url)<a href="{{ $img->url }}" tabindex="-1">@endif
+                        <img src="{{ $img->image_url }}" alt="{{ $img->caption ?: setting('site_name') }}" loading="lazy" draggable="false">
+                        @if($img->caption)<span class="showcase-caption">{{ $img->caption }}</span>@endif
+                    @if($img->url)</a>@endif
+                </div>
+            @endforeach
+        </div>
+        <button class="showcase-nav prev" aria-label="Previous"><i class="fa-solid fa-chevron-left"></i></button>
+        <button class="showcase-nav next" aria-label="Next"><i class="fa-solid fa-chevron-right"></i></button>
+    </div>
+    @if(setting('gallery_button_text'))
+        @php
+            $glink = setting('gallery_button_link', setting('facebook')) ?: route('shop');
+            $glink = str_starts_with($glink, '/') ? url($glink) : $glink;
+        @endphp
+        <div class="text-center" data-reveal>
+            <a href="{{ $glink }}" class="showcase-follow" target="_blank" rel="noopener" data-magnetic>
+                <i class="fa-brands fa-instagram"></i> {{ setting('gallery_button_text') }}
+            </a>
+        </div>
+    @endif
+</section>
+@endif
+
 {{-- Testimonials --}}
 @if(setting('home_show_testimonials') && $testimonials->count())
 <section class="section testimonial-section" style="padding:48px 0;margin-top:20px">

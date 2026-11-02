@@ -4,22 +4,30 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Login | {{ setting('site_name', 'Grihosthali') }}</title>
-    <link rel="icon" href="{{ asset('images/favicon.svg') }}">
+    <link rel="icon" href="{{ setting('favicon') ? upload_url(setting('favicon')) : asset('images/favicon.svg') }}">
     <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+Bengali:wght@700&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
-    <link rel="stylesheet" href="{{ asset('css/admin.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/admin.css') }}?v={{ filemtime(public_path('css/admin.css')) }}">
 </head>
 <body>
 <div class="login-page">
     <div class="login-art">
-        <h2>গৃহস্থালী</h2>
+        @if(setting('logo_white'))
+            <img src="{{ upload_url(setting('logo_white')) }}" alt="{{ setting('site_name') }}" style="max-width:260px;margin-bottom:14px">
+        @else
+            <h2>গৃহস্থালী</h2>
+        @endif
         <p>Pure • Natural • Traditional — manage your store, orders and products from one place.</p>
     </div>
     <div class="login-form">
         <form method="POST" action="{{ route('admin.login.submit') }}">
             @csrf
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:26px">
-                <span style="width:44px;height:44px;border-radius:12px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px"><i class="fa-solid fa-seedling"></i></span>
+                @if(setting('favicon'))
+                    <img src="{{ upload_url(setting('favicon')) }}" alt="" style="width:46px;height:46px;border-radius:12px">
+                @else
+                    <span style="width:44px;height:44px;border-radius:12px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:20px"><i class="fa-solid fa-seedling"></i></span>
+                @endif
                 <div><h2 style="margin:0">Admin Login</h2><small style="color:var(--muted)">Sign in to your dashboard</small></div>
             </div>
             @if($errors->any())<div class="alert alert-danger">{{ $errors->first() }}</div>@endif

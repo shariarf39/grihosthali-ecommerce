@@ -31,6 +31,7 @@ class DatabaseSeeder extends Seeder
         File::put(public_path('images/favicon.svg'), ProductArt::favicon());
 
         $this->settings();
+        $this->branding();
 
         User::updateOrCreate(['email' => 'admin@grihosthali.com'], [
             'name' => 'Grihosthali Admin',
@@ -47,6 +48,7 @@ class DatabaseSeeder extends Seeder
         $this->sliders();
         $this->testimonials();
         $this->pages();
+        $this->gallery();
 
         Coupon::updateOrCreate(['code' => 'WELCOME10'], ['type' => 'percent', 'value' => 10, 'min_order' => 1000, 'is_active' => true]);
         Coupon::updateOrCreate(['code' => 'GHEE100'], ['type' => 'fixed', 'value' => 100, 'min_order' => 1500, 'is_active' => true]);
@@ -57,7 +59,7 @@ class DatabaseSeeder extends Seeder
         Setting::put([
             'site_name' => 'Grihosthali',
             'site_tagline' => 'Pure • Natural • Traditional',
-            'top_notice' => 'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি — খাঁটি স্বাদ, সবার রান্নায়',
+            'top_notice' => 'সারা বাংলাদেশে ক্যাশ অন ডেলিভারি — খাঁটিতেই তৃপ্তি',
             'phone' => '+8801700000000',
             'hotline' => '+8801700000000',
             'email' => 'info@grihosthali.com',
@@ -70,11 +72,23 @@ class DatabaseSeeder extends Seeder
             'shipping_inside' => '70',
             'shipping_outside' => '130',
             'free_shipping_min' => '3000',
-            'primary_color' => '#1f4d36',
-            'secondary_color' => '#c9a24a',
+            'primary_color' => '#084645',
+            'secondary_color' => '#e0a421',
+            'footer_tagline' => 'খাঁটিতেই তৃপ্তি',
             'meta_description' => 'Grihosthali — premium desi ghee, pure honey, cold-pressed mustard oil and natural foods delivered across Bangladesh with cash on delivery.',
             'meta_keywords' => 'grihosthali, desi ghee, gawa ghee, honey, mustard oil, organic food bangladesh',
         ]);
+    }
+
+    /** Logo variants + icons from the brand's square logo (public/uploads/brand/logo-source.jpg). */
+    private function branding(): void
+    {
+        $source = "{$this->uploads}/brand/logo-source.jpg";
+        if (! is_file($source)) {
+            return;
+        }
+        BrandAssets::build($source, "{$this->uploads}/brand");
+        Setting::put(['logo' => 'brand/logo.png', 'logo_white' => 'brand/logo-white.png', 'favicon' => 'brand/favicon.png']);
     }
 
     private function brands(): array
@@ -263,15 +277,58 @@ class DatabaseSeeder extends Seeder
         File::put("{$this->uploads}/sliders/hero-honey.svg", ProductArt::banner('jar', '#c97a06', '#3b2304', '#7a4a0a', 'Sundarban Honey', '100% PURE'));
         File::put("{$this->uploads}/sliders/hero-oil.svg", ProductArt::banner('bottle', '#d9a514', '#163a28', '#2c6b4a', 'Mustard Oil', 'COLD PRESSED'));
 
-        $slides = [
+        $slides = [];
+        if (is_file("{$this->uploads}/sliders/cover-grihosthali.jpg")) {
+            // Brand cover already carries the logo and tagline, so it has no overlay text.
+            $slides[] = ['cover-grihosthali.jpg', null, null, null, '/shop'];
+        }
+        $slides = array_merge($slides, [
             ['hero-ghee.jpg', 'Premium Desi Ghee', 'খাঁটি স্বাদ, সবার রান্নায় — গ্রামের ঐতিহ্যবাহী পদ্ধতিতে তৈরি', 'Order Now', '/products/premium-desi-ghee-500ml'],
             ['hero-honey.svg', 'Pure Sundarban Honey', 'সুন্দরবনের প্রাকৃতিক চাক থেকে সংগৃহীত খাঁটি মধু', 'Shop Honey', '/category/honey'],
             ['hero-oil.svg', 'Cold Pressed Mustard Oil', 'ঘানি ভাঙা খাঁটি সরিষার তেল — ঝাঁঝালো স্বাদ ও ঘ্রাণ', 'Shop Oil', '/category/oil'],
-        ];
+        ]);
         foreach ($slides as $i => [$img, $title, $sub, $btn, $link]) {
             Slider::updateOrCreate(['image' => "sliders/{$img}"], [
                 'title' => $title, 'subtitle' => $sub, 'button_text' => $btn, 'link' => $link, 'sort_order' => $i + 1, 'is_active' => true,
             ]);
+        }
+    }
+
+    /** Starter images for the 3D showcase: portrait crops of the brand photo mixed with product art. */
+    private function gallery(): void
+    {
+        if (\App\Models\GalleryImage::exists()) {
+            return;
+        }
+        File::ensureDirectoryExists("{$this->uploads}/gallery");
+        $src = imagecreatefrompng("{$this->uploads}/sliders/ghee-hero.png");
+        // [x, y, width] — height is width × 1.25 (4:5 portrait).
+        $crops = [[0, 0, 674], [170, 200, 480], [300, 0, 674], [640, 60, 600], [590, 0, 674]];
+        $images = [];
+        foreach ($crops as $i => [$x, $y, $w]) {
+            $h = (int) round($w * 1.25);
+            $h = min($h, 843 - $y);
+            $w = (int) round($h / 1.25);
+            $out = imagecreatetruecolor(800, 1000);
+            imagecopyresampled($out, $src, 0, 0, $x, $y, 800, 1000, $w, $h);
+            imagejpeg($out, "{$this->uploads}/gallery/brand-{$i}.jpg", 86);
+            imagedestroy($out);
+            $images[] = ["gallery/brand-{$i}.jpg", ['Fresh from our kitchen', 'Golden, grainy & pure', 'Gift-ready packaging', 'Made the traditional way', 'খাঁটি স্বাদ, সবার রান্নায়'][$i], '/products/premium-desi-ghee-500ml'];
+        }
+        imagedestroy($src);
+
+        foreach (['sundarban-honey-1kg', 'cold-pressed-mustard-oil-1-litre', 'ajwa-dates-1kg', 'mixed-dry-fruits-500gm', 'healthy-family-combo'] as $slug) {
+            $images[] = ["products/{$slug}.svg", null, "/products/{$slug}"];
+        }
+
+        // Interleave photos and product art so the carousel alternates.
+        $photos = array_slice($images, 0, 5);
+        $art = array_slice($images, 5);
+        $order = 0;
+        foreach ($photos as $i => $photo) {
+            foreach (array_filter([$photo, $art[$i] ?? null]) as [$image, $caption, $link]) {
+                \App\Models\GalleryImage::create(['image' => $image, 'caption' => $caption, 'link' => $link, 'sort_order' => ++$order]);
+            }
         }
     }
 

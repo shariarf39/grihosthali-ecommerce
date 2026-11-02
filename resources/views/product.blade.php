@@ -14,10 +14,13 @@
     <div class="product-single">
         <div class="pd-gallery">
             <div class="pd-main-img">
+                <span class="zoom-hint"><i class="fa-solid fa-magnifying-glass-plus"></i> <span class="zh-desk">Hover to zoom · scroll to change</span><span class="zh-touch">Press &amp; drag to zoom</span></span>
+                {{-- Selector frame that marks the zoomed area on the photo --}}
+                <div class="zoom-lens" aria-hidden="true"><span class="zl-cross"></span></div>
                 <div class="swiper pd-main-swiper">
                     <div class="swiper-wrapper">
                         @foreach($product->gallery_urls as $img)
-                            <div class="swiper-slide"><img src="{{ $img }}" alt="{{ $product->name }}"></div>
+                            <div class="swiper-slide zoom-pane" data-index="{{ $loop->index }}"><img src="{{ $img }}" alt="{{ $product->name }}"></div>
                         @endforeach
                     </div>
                     @if(count($product->gallery_urls) > 1)
@@ -26,6 +29,15 @@
                     @endif
                 </div>
                 @if($product->flag)<span class="flag-name">{{ $product->flag }}</span>@endif
+            </div>
+            {{-- Large zoom window shown beside the photo on desktop --}}
+            <div class="zoom-window" aria-hidden="true">
+                <div class="zw-image"></div>
+                <div class="zw-bar">
+                    <span class="zw-name">{{ $product->name }}</span>
+                    <span class="zw-level"><i class="fa-solid fa-magnifying-glass"></i> <b>2.5×</b></span>
+                </div>
+                <div class="zw-meter"><span></span></div>
             </div>
             @if(count($product->gallery_urls) > 1)
                 <div class="swiper pd-thumbs">

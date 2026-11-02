@@ -18,7 +18,7 @@ class SettingController extends Controller
         'primary_color', 'secondary_color', 'meta_description', 'meta_keywords', 'copyright',
         'delivery_time_inside', 'delivery_time_outside', 'return_days', 'return_policy_note',
         'checkout_notice', 'checkout_button', 'order_success_message', 'footer_tagline',
-        'crm_vip_amount', 'crm_inactive_days',
+        'crm_vip_amount', 'crm_inactive_days', 'cursor_style',
         'feature1_icon', 'feature1_title', 'feature1_text', 'feature2_icon', 'feature2_title', 'feature2_text',
         'feature3_icon', 'feature3_title', 'feature3_text', 'feature4_icon', 'feature4_title', 'feature4_text',
         'categories_title', 'categories_subtitle', 'top_selling_title', 'just_for_you_title', 'just_for_you_count',
@@ -29,10 +29,10 @@ class SettingController extends Controller
     /** Checkbox settings: stored as "1"/"0" so an unticked box is saved too. */
     private const TOGGLE_KEYS = [
         'home_show_features', 'home_show_categories', 'home_show_top_selling', 'home_show_promo',
-        'home_show_brands', 'home_show_just_for_you', 'home_show_testimonials',
+        'home_show_brands', 'home_show_just_for_you', 'home_show_testimonials', 'cursor_trail',
     ];
 
-    private const IMAGE_KEYS = ['logo', 'logo_white', 'favicon', 'payment_banner', 'promo_image'];
+    private const IMAGE_KEYS = ['logo', 'logo_white', 'favicon', 'app_icon', 'share_image', 'payment_banner', 'promo_image'];
 
     public function index()
     {
@@ -53,12 +53,15 @@ class SettingController extends Controller
             'logo_white' => 'nullable|image|max:2048',
             'favicon' => 'nullable|mimes:png,ico,jpg,jpeg,svg,webp|max:1024',
             'payment_banner' => 'nullable|image|max:2048',
+            'app_icon' => 'nullable|image|max:1024',
+            'share_image' => 'nullable|image|max:4096',
             'promo_image' => 'nullable|image|max:4096',
             'return_days' => 'nullable|integer|min:0|max:90',
             'just_for_you_count' => 'nullable|integer|min:0|max:60',
             'promo_after_section' => 'nullable|integer|min:0|max:20',
             'crm_vip_amount' => 'nullable|numeric|min:0',
             'crm_inactive_days' => 'nullable|integer|min:1',
+            'cursor_style' => 'nullable|in:honey,leaf,off',
         ]);
 
         // Only keys present in this form are saved, so other tabs' values are never wiped.

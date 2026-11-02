@@ -137,10 +137,52 @@
         });
     }
 
-    function cartCall(url, payload, { open = false, silent = false } = {}) {
+    /* The product photo flies into the visible cart icon, then the count pops. */
+    function flyToCart(sourceImg) {
+        const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        const visible = (el) => {
+            if (!el || el.offsetParent === null) return false;
+            const r = el.getBoundingClientRect();
+            return r.width > 0 && r.bottom > 0 && r.top < window.innerHeight && r.right > 0 && r.left < window.innerWidth;
+        };
+        const target = ['.header-bottom.scrolled .sticky-actions [data-open-cart]', '.header-right [data-open-cart]',
+            '.sticky-footer [data-open-cart]', '.floating-cart'].map((s) => $(s)).find(visible);
+        if (reduce || !sourceImg || !target || !sourceImg.animate) return Promise.resolve(target);
+
+        const from = sourceImg.getBoundingClientRect();
+        const to = target.getBoundingClientRect();
+        const size = Math.min(from.width, 140);
+        const clone = sourceImg.cloneNode();
+        Object.assign(clone.style, {
+            position: 'fixed', zIndex: 3000, pointerEvents: 'none', objectFit: 'cover', borderRadius: '14px',
+            left: `${from.left + from.width / 2 - size / 2}px`, top: `${from.top + from.height / 2 - size / 2}px`,
+            width: `${size}px`, height: `${size}px`, boxShadow: '0 14px 34px rgba(0,0,0,.25)',
+        });
+        document.body.appendChild(clone);
+        const dx = to.left + to.width / 2 - (from.left + from.width / 2);
+        const dy = to.top + to.height / 2 - (from.top + from.height / 2);
+        const anim = clone.animate([
+            { transform: 'translate(0,0) scale(1) rotate(0)', opacity: 1, borderRadius: '14px' },
+            { transform: `translate(${dx * 0.45}px, ${dy * 0.45 - 120}px) scale(.6) rotate(-12deg)`, opacity: 1, offset: 0.45 },
+            { transform: `translate(${dx}px, ${dy}px) scale(.12) rotate(8deg)`, opacity: 0.4, borderRadius: '50%' },
+        ], { duration: 800, easing: 'cubic-bezier(.5,0,.25,1)' });
+        return anim.finished.then(() => { clone.remove(); return target; });
+    }
+
+    function bumpCart() {
+        $$('.cart-count').forEach((el) => {
+            el.classList.remove('bump');
+            void el.offsetWidth; // restart the animation
+            el.classList.add('bump');
+        });
+    }
+
+    function cartCall(url, payload, { open = false, silent = false, flyFrom = null } = {}) {
         return request(url, payload)
-            .then((data) => {
+            .then(async (data) => {
+                if (flyFrom) await flyToCart(flyFrom);
                 renderCart(data);
+                bumpCart();
                 if (open) openPanel(cartSidebar);
                 if (data.message && !silent) toast(data.message);
                 return data;
@@ -161,7 +203,8 @@
             e.preventDefault();
             const id = addBtn.closest('.product-card-action').dataset.id;
             addBtn.classList.add('loading');
-            cartCall(GH.routes.cartAdd, { product_id: id, qty: 1 }, { open: true }).finally(() => addBtn.classList.remove('loading'));
+            const cardImg = addBtn.closest('.product-card') && $('.product-media img', addBtn.closest('.product-card'));
+            cartCall(GH.routes.cartAdd, { product_id: id, qty: 1 }, { open: true, flyFrom: cardImg }).finally(() => addBtn.classList.remove('loading'));
             return;
         }
 
@@ -188,7 +231,8 @@
         if (pdAdd) {
             e.preventDefault();
             const qtyInput = $('#pd-qty');
-            cartCall(GH.routes.cartAdd, { product_id: pdAdd.dataset.addWithQty, qty: parseInt(qtyInput ? qtyInput.value : 1, 10) || 1 }, { open: true });
+            const photo = $('.pd-main-img .swiper-slide-active img') || $('.pd-main-img img');
+            cartCall(GH.routes.cartAdd, { product_id: pdAdd.dataset.addWithQty, qty: parseInt(qtyInput ? qtyInput.value : 1, 10) || 1 }, { open: true, flyFrom: photo });
         }
     });
 
@@ -402,15 +446,7 @@
 
     $$('[data-auto-submit]').forEach((el) => el.addEventListener('change', () => el.form.submit()));
 
-    // Subtle fade-up of homepage/listing sections as they scroll into view.
-    if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-        const targets = $$('main .section, main .features, .promo-banner');
-        document.documentElement.classList.add('js-reveal');
-        const io = new IntersectionObserver((entries) => entries.forEach((en) => {
-            if (en.isIntersecting) { en.target.classList.add('in'); io.unobserve(en.target); }
-        }), { rootMargin: '0px 0px -60px 0px' });
-        targets.forEach((el) => { el.classList.add('reveal'); io.observe(el); });
-    }
+    // Scroll / load animations, cursor and image zoom live in motion.js.
 
     // Once the category bar is pinned, reveal its compact search / wishlist / cart icons.
     const bar = $('.header-bottom');

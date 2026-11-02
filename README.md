@@ -55,6 +55,12 @@ Admin features:
 - **Admin UI** – grouped collapsible sidebar (remembers state), mini sidebar mode, mobile drawer,
   global search (`/` key) across orders, phones, customers, products and consignment IDs, notification bell.
 
+**Configuration is cached** (`php artisan config:cache`) because XAMPP on Windows runs PHP multi-threaded and can
+otherwise occasionally fail to read `.env`. After editing `.env`, run `php artisan config:cache` again.
+
+**Brand:** logo, white logo, favicon, phone icon and social share image are uploaded in Admin → Store Settings →
+Logo & Colors; homepage banners (including the brand cover) in Admin → Marketing → Sliders.
+
 On an existing database, run `php artisan migrate` then `php artisan db:seed --class=RoleSeeder`
 (existing admins become Super Admin).
 

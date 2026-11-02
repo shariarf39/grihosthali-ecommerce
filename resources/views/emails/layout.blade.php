@@ -11,8 +11,8 @@
         <table role="presentation" width="600" cellpadding="0" cellspacing="0" style="max-width:600px;width:100%;background:#ffffff;border-radius:12px;overflow:hidden;">
             <tr>
                 <td style="background:{{ setting('primary_color', '#1f4d36') }};padding:22px 28px;text-align:center;">
-                    @if(setting('logo'))
-                        <img src="{{ upload_url(setting('logo')) }}" alt="{{ setting('site_name') }}" style="max-height:48px;">
+                    @if(setting('logo_white') || setting('logo'))
+                        <img src="{{ upload_url(setting('logo_white') ?: setting('logo')) }}" alt="{{ setting('site_name') }}" style="max-height:56px;">
                     @else
                         <div style="font-size:26px;font-weight:700;color:#ffffff;">গৃহস্থালী</div>
                         <div style="font-size:11px;letter-spacing:3px;color:{{ setting('secondary_color', '#c9a24a') }};">{{ strtoupper(setting('site_name')) }}</div>

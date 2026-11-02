@@ -13,6 +13,10 @@
         @unless($product->in_stock)
             <span class="stock-out-label">Out of Stock</span>
         @endunless
+        {{-- Slides up on hover (desktop); on touch screens the whole image is the link. --}}
+        <a href="{{ route('product.show', $product->slug) }}" class="quick-view" tabindex="-1" aria-hidden="true">
+            View details <i class="fa-solid fa-arrow-right"></i>
+        </a>
         <button type="button" class="wishlist-btn" data-wishlist="{{ $product->id }}" aria-label="Add {{ $product->name }} to wishlist">
             <i class="fa-regular fa-heart"></i>
         </button>

@@ -97,8 +97,8 @@
         data: {
             labels: chartData.map(d => d.label),
             datasets: [
-                { type: 'bar', label: 'Sales (৳)', data: chartData.map(d => d.total), backgroundColor: 'rgba(31,77,54,.85)', borderRadius: 6, yAxisID: 'y' },
-                { type: 'line', label: 'Orders', data: chartData.map(d => d.orders), borderColor: '#c9a24a', backgroundColor: '#c9a24a', tension: .35, yAxisID: 'y1' }
+                { type: 'bar', label: 'Sales (৳)', data: chartData.map(d => d.total), backgroundColor: 'rgba(8,70,69,.85)', borderRadius: 6, yAxisID: 'y' },
+                { type: 'line', label: 'Orders', data: chartData.map(d => d.orders), borderColor: '#e0a421', backgroundColor: '#e0a421', tension: .35, yAxisID: 'y1' }
             ]
         },
         options: {

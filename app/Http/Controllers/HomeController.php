@@ -33,6 +33,8 @@ class HomeController extends Controller
 
         $testimonials = Testimonial::where('is_active', true)->latest()->get();
 
-        return view('home', compact('sliders', 'featuredCategories', 'topSelling', 'brands', 'homeSections', 'justForYou', 'testimonials'));
+        $gallery = setting('home_show_gallery') ? \App\Models\GalleryImage::active()->get() : collect();
+
+        return view('home', compact('sliders', 'featuredCategories', 'topSelling', 'brands', 'homeSections', 'justForYou', 'testimonials', 'gallery'));
     }
 }
