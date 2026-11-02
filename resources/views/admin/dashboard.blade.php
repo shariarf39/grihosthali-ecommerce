@@ -10,21 +10,88 @@
     <div class="stat"><div class="icon red"><i class="fa-solid fa-users"></i></div><div><small>Customers / Products</small><strong>{{ $stats['customers'] }} / {{ $stats['products'] }}</strong><small><a href="{{ route('admin.inventory.index', ['filter' => 'low']) }}">{{ $stats['low_stock'] }} low stock</a> · <a href="{{ route('admin.returns.index', ['status' => 'requested']) }}">{{ $stats['returns'] }} returns</a></small></div></div>
 </div>
 
-<div class="grid-2">
-    <div class="card">
-        <div class="card-header"><h3>Sales — last 14 days</h3></div>
-        <div class="card-body"><canvas id="salesChart" height="110"></canvas></div>
-    </div>
-    <div class="card">
-        <div class="card-header"><h3>Orders by status</h3></div>
-        <div class="card-body">
-            <ul class="info-list">
-                @foreach(\App\Models\Order::STATUSES as $key => $label)
-                    <li><span><span class="badge badge-{{ status_badge($key) }}">{{ $label }}</span></span><span><a href="{{ route('admin.orders.index', ['status' => $key]) }}">{{ $statusCounts[$key] ?? 0 }}</a></span></li>
-                @endforeach
-            </ul>
+@php
+    $statusTotal = $statusCounts->sum();
+    $pendingCount = (int) ($statusCounts['pending'] ?? 0);
+    $deliveredCount = (int) ($statusCounts['delivered'] ?? 0);
+    $openCount = collect(['pending', 'confirmed', 'processing', 'shipped'])
+        ->sum(fn ($status) => (int) ($statusCounts[$status] ?? 0));
+    $exceptionCount = (int) ($statusCounts['cancelled'] ?? 0) + (int) ($statusCounts['returned'] ?? 0);
+    $deliveryRate = $statusTotal > 0 ? (int) round($deliveredCount / $statusTotal * 100) : 0;
+    $exceptionRate = $statusTotal > 0 ? (int) round($exceptionCount / $statusTotal * 100) : 0;
+    $statusIcons = [
+        'pending' => 'fa-regular fa-clock',
+        'confirmed' => 'fa-solid fa-circle-check',
+        'processing' => 'fa-solid fa-gear',
+        'shipped' => 'fa-solid fa-truck-fast',
+        'delivered' => 'fa-solid fa-box-open',
+        'cancelled' => 'fa-solid fa-ban',
+        'returned' => 'fa-solid fa-arrow-rotate-left',
+    ];
+@endphp
+<section class="card dashboard-statuses" aria-labelledby="orders-by-status-title">
+    <div class="card-header dashboard-statuses-header">
+        <div>
+            <h3 id="orders-by-status-title"><i class="fa-solid fa-chart-pie" aria-hidden="true"></i> Orders by status</h3>
+            <small>Track order fulfillment across every stage</small>
+        </div>
+        <div class="dashboard-status-total">
+            <strong>{{ number_format($statusTotal) }}</strong>
+            <span>{{ \Illuminate\Support\Str::plural('order', $statusTotal) }} total</span>
         </div>
     </div>
+    <div class="card-body">
+        <div class="order-status-insights">
+            <div class="order-status-insight order-status-insight--success">
+                <span class="order-status-insight-icon"><i class="fa-solid fa-bullseye" aria-hidden="true"></i></span>
+                <span class="order-status-insight-copy">
+                    <span>Fulfillment rate</span>
+                    <strong>{{ $deliveryRate }}%</strong>
+                    <small>{{ number_format($deliveredCount) }} of {{ number_format($statusTotal) }} orders delivered</small>
+                </span>
+            </div>
+            <div class="order-status-insight order-status-insight--primary">
+                <span class="order-status-insight-icon"><i class="fa-solid fa-layer-group" aria-hidden="true"></i></span>
+                <span class="order-status-insight-copy">
+                    <span>Active pipeline</span>
+                    <strong>{{ number_format($openCount) }}</strong>
+                    <small>{{ number_format($pendingCount) }} awaiting confirmation</small>
+                </span>
+            </div>
+            <div class="order-status-insight order-status-insight--warning">
+                <span class="order-status-insight-icon"><i class="fa-solid fa-triangle-exclamation" aria-hidden="true"></i></span>
+                <span class="order-status-insight-copy">
+                    <span>Cancelled &amp; returned</span>
+                    <strong>{{ number_format($exceptionCount) }} <small>({{ $exceptionRate }}%)</small></strong>
+                    <small>Share of all orders</small>
+                </span>
+            </div>
+        </div>
+        <div class="order-status-grid">
+            @foreach(\App\Models\Order::STATUSES as $key => $label)
+                @php
+                    $count = (int) ($statusCounts[$key] ?? 0);
+                    $percentage = $statusTotal > 0 ? (int) round($count / $statusTotal * 100) : 0;
+                    $color = status_badge($key);
+                @endphp
+                <a class="order-status-card order-status-card--{{ $color }}" href="{{ route('admin.orders.index', ['status' => $key]) }}">
+                    <span class="order-status-icon"><i class="{{ $statusIcons[$key] ?? 'fa-solid fa-circle' }}" aria-hidden="true"></i></span>
+                    <span class="order-status-details">
+                        <span class="order-status-label">{{ $label }}</span>
+                        <strong>{{ number_format($count) }}</strong>
+                    </span>
+                    <span class="order-status-progress" role="progressbar" aria-label="{{ $label }} orders" aria-valuenow="{{ $percentage }}" aria-valuemin="0" aria-valuemax="100">
+                        <span style="width: {{ $percentage }}%"></span>
+                    </span>
+                </a>
+            @endforeach
+        </div>
+    </div>
+</section>
+
+<div class="card dashboard-sales">
+    <div class="card-header"><h3>Sales — last 14 days</h3></div>
+    <div class="card-body"><canvas id="salesChart" height="110"></canvas></div>
 </div>
 
 <div class="grid-2">
